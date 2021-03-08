@@ -15,10 +15,10 @@ entity ParallelPort is
         address:    in std_logic_vector(2 downto 0);
 
         read:       in std_logic;
-        readdata:   out std_logic_vector(width-1 downto 0);
+        readdata:   out std_logic_vector(31 downto 0);
 
         write:      in std_logic;
-        writedata:  in std_logic_vector(width-1 downto 0);
+        writedata:  in std_logic_vector(31 downto 0);
 
         -- Conduit
         ParPort:    inout std_logic_vector(width-1 downto 0)
@@ -59,10 +59,10 @@ begin
         elsif rising_edge(clk) then
             if write = '1' then
                 case address is
-                    when "000" => iRegPort <= writedata;
-                    when "001" => iRegPort <= iRegPort or writedata;
-                    when "010" => iRegPort <= iRegPort and not writedata;
-                    when "011" => iRegDir <= writedata;
+                    when "000" => iRegPort <= writedata(width-1 downto 0);
+                    when "001" => iRegPort <= iRegPort or writedata(width-1 downto 0);
+                    when "010" => iRegPort <= iRegPort and not writedata(width-1 downto 0);
+                    when "011" => iRegDir <= writedata(width-1 downto 0);
                     when others => null;
                 end case;
             end if;
@@ -76,9 +76,9 @@ begin
             readdata <= (others => '0');
             if read = '1' then
                 case address is
-                    when "000" => readdata <= iRegPort;
-                    when "011" => readdata <= iRegDir;
-                    when "100" => readdata <= iRegPin;
+                    when "000" => readdata(width-1 downto 0) <= iRegPort;
+                    when "011" => readdata(width-1 downto 0) <= iRegDir;
+                    when "100" => readdata(width-1 downto 0) <= iRegPin;
                     when others => null;
                 end case;
             end if;
