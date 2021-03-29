@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 
 entity ParallelPort is
     generic (
-        width:      positive range 1 to 32
+        width:      positive range 1 to 32 := 32
     );
     port (
         -- Avalon signals
@@ -29,8 +29,8 @@ end ParallelPort;
 architecture comp of ParallelPort is
 
     -- internal signals
-    signal iRegDir:         std_logic_vector(width-1 downto 0);
-    signal iRegPort:        std_logic_vector(width-1 downto 0);
+    signal iRegDir:         std_logic_vector(width-1 downto 0) := (others => '0');
+    signal iRegPort:        std_logic_vector(width-1 downto 0) := (others => '0');
     signal iRegPin:         std_logic_vector(width-1 downto 0);
 
 begin

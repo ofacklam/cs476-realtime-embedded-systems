@@ -28,7 +28,7 @@ begin
     dut: entity work.ParallelPort
     generic map(
         width => WIDTH
-    );
+    )
     port map(
         clk => clk,
         nReset => nReset,
@@ -134,6 +134,7 @@ begin
         end loop;
 
         -- test RegSet & RegClr
+        writeRegister("011", X"ffffffff"); -- all to output mode
         for i in 0 to WIDTH-1 loop
             writeRegister("000", X"00000000"); -- test RegSet
             tmp := (others => '0');
