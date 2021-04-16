@@ -7,7 +7,7 @@ end tb_ParallelPort;
 
 architecture test of tb_ParallelPort is
 
-    constant CLK_PERIOD: time := 20ns;
+    constant CLK_PERIOD: time := 20 ns;
     constant WIDTH: positive := 20;
     constant padding: std_logic_vector(31-WIDTH downto 0) := (others => '0');
     signal test_finished: boolean := false;
@@ -20,6 +20,7 @@ architecture test of tb_ParallelPort is
     signal read: std_logic;
     signal writedata: std_logic_vector(31 downto 0);
     signal readdata: std_logic_vector(31 downto 0);
+    signal irq: std_logic;
     signal ParPort: std_logic_vector(WIDTH-1 downto 0);
 
 begin
@@ -37,6 +38,7 @@ begin
         read => read,
         writedata => writedata,
         readdata => readdata,
+        irq => irq,
         ParPort => ParPort
     );
 
@@ -158,6 +160,44 @@ begin
             testRegister("000", tmp); -- read back OK
             testRegister("100", tmp); -- RegPin OK
             checkValue("111", padding & ParPort, tmp); -- conduit OK
+        end loop;
+
+        -- test RegInt & RegClrInt
+        writeRegister("011", X"ffffffff"); -- all to output mode
+        writeRegister("000", X"00000000"); -- output 0
+        writeRegister("110", X"ffffffff"); -- clear all interrupts
+        for i in 0 to WIDTH-1 loop
+            tmp := (others => '0'); -- set a bit
+            tmp(i) := '1';
+            writeRegister("001", tmp);
+
+            wait until rising_edge(clk); -- check interrupt triggered (1 cycle latency)
+            testRegister("110", tmp);
+
+            writeRegister("010", tmp); -- clear bit
+
+            writeRegister("110", tmp); -- clear interrupt
+
+            wait until rising_edge(clk); -- check interrupt cleared (1 cycle latency)
+            testRegister("110", X"00000000"); 
+        end loop;
+
+        -- test RegIEn & IRQ
+        writeRegister("011", X"ffffffff"); -- all to output mode
+        writeRegister("000", X"00000000"); -- output 0
+        writeRegister("000", X"ffffffff"); -- output 1 -> trigger all interrupts
+        for i in 0 to WIDTH-1 loop
+            tmp := (others => '0'); -- set interrupt enable bit
+            tmp(i) := '1';
+            writeRegister("101", tmp);
+
+            wait for CLK_PERIOD / 4;
+            assert irq = '1' report "IRQ should be on" severity error;
+
+            writeRegister("101", X"00000000"); -- clear interrupt enables
+
+            wait for CLK_PERIOD / 4;
+            assert irq = '0' report "IRQ should be off" severity error;
         end loop;
 
         -- test done

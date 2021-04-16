@@ -20,6 +20,8 @@ entity ParallelPort is
         write:      in std_logic;
         writedata:  in std_logic_vector(31 downto 0);
 
+        irq:        out std_logic;
+
         -- Conduit
         ParPort:    inout std_logic_vector(width-1 downto 0)
     );
@@ -32,6 +34,11 @@ architecture comp of ParallelPort is
     signal iRegDir:         std_logic_vector(width-1 downto 0) := (others => '0');
     signal iRegPort:        std_logic_vector(width-1 downto 0) := (others => '0');
     signal iRegPin:         std_logic_vector(width-1 downto 0);
+    signal iRegPinOld:      std_logic_vector(width-1 downto 0) := (others => '0');
+    signal iOldValid:       std_logic := '0';
+    signal iRegIEn:         std_logic_vector(width-1 downto 0) := (others => '0');
+    signal iRegInt:         std_logic_vector(width-1 downto 0) := (others => '0');
+    signal iRegClrInt:      std_logic_vector(width-1 downto 0) := (others => '0');
 
 begin
 
@@ -56,13 +63,18 @@ begin
         if nReset = '0' then
             iRegDir <= (others => '0');
             iRegPort <= (others => '0');
+            iRegIEn <= (others => '0');
+            iRegClrInt <= (others => '0');
         elsif rising_edge(clk) then
+            iRegClrInt <= (others => '0');
             if write = '1' then
                 case address is
                     when "000" => iRegPort <= writedata(width-1 downto 0);
                     when "001" => iRegPort <= iRegPort or writedata(width-1 downto 0);
                     when "010" => iRegPort <= iRegPort and not writedata(width-1 downto 0);
                     when "011" => iRegDir <= writedata(width-1 downto 0);
+                    when "101" => iRegIEn <= writedata(width-1 downto 0);
+                    when "110" => iRegClrInt <= writedata(width-1 downto 0);
                     when others => null;
                 end case;
             end if;
@@ -79,10 +91,35 @@ begin
                     when "000" => readdata(width-1 downto 0) <= iRegPort;
                     when "011" => readdata(width-1 downto 0) <= iRegDir;
                     when "100" => readdata(width-1 downto 0) <= iRegPin;
+                    when "101" => readdata(width-1 downto 0) <= iRegIEn;
+                    when "110" => readdata(width-1 downto 0) <= iRegInt;
                     when others => null;
                 end case;
             end if;
         end if;
     end process pRead;
+
+    -- drive the interrupt register
+    pInterrupt: process(clk, nReset)
+        variable prev: std_logic_vector(width-1 downto 0);
+    begin
+        if nReset = '0' then
+            iRegPinOld <= (others => '0');
+            iOldValid <= '0';
+            iRegInt <= (others => '0');
+        elsif rising_edge(clk) then
+            if iOldValid = '1' then
+                prev := iRegPinOld;
+            else 
+                prev := iRegPin;
+            end if;
+            iRegInt <= (iRegInt and not iRegClrInt) or (iRegPin xor prev);
+            iRegPinOld <= iRegPin;
+            iOldValid <= '1';
+        end if;
+    end process pInterrupt;
+
+    -- drive interrupt request
+    irq <= '0' when unsigned(iRegInt and iRegIEn) = 0 else '1';
 
 end comp;
