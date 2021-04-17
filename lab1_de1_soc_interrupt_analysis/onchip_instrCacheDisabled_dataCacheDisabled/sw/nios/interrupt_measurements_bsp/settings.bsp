@@ -2,10 +2,10 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Mar 29, 2021 10:00:50 AM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1617004850154</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Apr 17, 2021 10:23:48 AM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1618647828484</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/vm/Documents/cs476/lab1/onchip_instrCacheDisabled_dataCacheDisabled/sw/nios/interrupt_measurements_bsp</BspGeneratedLocation>
-        <BspSettingsFile>./settings.bsp</BspSettingsFile>
+        <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>/home/vm/Documents/cs476/lab1/onchip_instrCacheDisabled_dataCacheDisabled/hw/quartus/soc_system.sopcinfo</SopcDesignFile>
         <JdiFile>default</JdiFile>
         <Cpu>nios2_gen2_0</Cpu>
@@ -900,25 +900,43 @@
         </Setting>
         <MemoryMap>
                 <slaveDescriptor>onchip_memory2_0</slaveDescriptor>
-                <addressRange>0x00020000 - 0x0003FFFF</addressRange>
+                <addressRange>0x08020000 - 0x0803FFFF</addressRange>
                 <addressSpan>131072</addressSpan>
                 <attributes>memory</attributes>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>ParallelPort_LED</slaveDescriptor>
-                <addressRange>0x00041000 - 0x0004101F</addressRange>
+                <slaveDescriptor>performance_counter_0</slaveDescriptor>
+                <addressRange>0x08041000 - 0x0804103F</addressRange>
+                <addressSpan>64</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>timer_0</slaveDescriptor>
+                <addressRange>0x08041040 - 0x0804105F</addressRange>
+                <addressSpan>32</addressSpan>
+                <attributes>timer</attributes>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>sp_counter_0</slaveDescriptor>
+                <addressRange>0x08041060 - 0x0804107F</addressRange>
                 <addressSpan>32</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>PIO_BTN</slaveDescriptor>
-                <addressRange>0x00041020 - 0x0004102F</addressRange>
+                <slaveDescriptor>ParallelPort_0</slaveDescriptor>
+                <addressRange>0x08041080 - 0x0804109F</addressRange>
+                <addressSpan>32</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>PIO_0</slaveDescriptor>
+                <addressRange>0x080410A0 - 0x080410AF</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>jtag_uart_0</slaveDescriptor>
-                <addressRange>0x00041030 - 0x00041037</addressRange>
+                <addressRange>0x080410B0 - 0x080410B7</addressRange>
                 <addressSpan>8</addressSpan>
                 <attributes>printable</attributes>
         </MemoryMap>

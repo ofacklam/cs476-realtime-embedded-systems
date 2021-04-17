@@ -19,31 +19,68 @@
 #include <stdint.h>
 #include "io.h"
 #include "system.h"
+#include "sys/alt_irq.h"
 #include "altera_avalon_pio_regs.h"
+#include "altera_avalon_timer_regs.h"
+
+int done = 0;
+uint16_t timestamp;
+
+static void timer_isr(void *context) {
+	// trigger a snapshot by writing arbitrary value
+	IOWR_ALTERA_AVALON_TIMER_SNAPL(TIMER_0_BASE, 0);
+
+	// get timestamp from snapshot
+	timestamp = IORD_ALTERA_AVALON_TIMER_SNAPL(TIMER_0_BASE);
+
+	// clear interrupt & stop timer
+	IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE, 11); //b1011
+	IOWR_ALTERA_AVALON_TIMER_STATUS(TIMER_0_BASE, 0);
+
+	done = 1;
+}
+
+void setup_timer() {
+	// clear status (pending interrupt)
+	IOWR_ALTERA_AVALON_TIMER_STATUS(TIMER_0_BASE, 0);
+	// stop timer
+	IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE, 1 << ALTERA_AVALON_TIMER_CONTROL_STOP_OFST);
+
+	// set period
+	IOWR_ALTERA_AVALON_TIMER_PERIODL(TIMER_0_BASE, 0xffff);
+	IOWR_ALTERA_AVALON_TIMER_PERIODH(TIMER_0_BASE, 0x0000);
+
+	// enable continuous mode & interrupt
+	IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE, 3);
+	// start timer
+	IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE, 7);
+}
+
+void measurement1() {
+	// register timer ISR
+	alt_ic_isr_register(TIMER_0_IRQ_INTERRUPT_CONTROLLER_ID, TIMER_0_IRQ, timer_isr, NULL, NULL);
+	// setup timer config
+	setup_timer();
+
+	while(1) {
+		if(done) {
+			// print response time
+			uint16_t elapsed = 0xffff - timestamp + 1;
+			printf("Interrupt response time: %d cycles\n", elapsed);
+
+			// start counter again
+			//done = 0;
+			//IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE, 7);
+			break;
+		}
+	}
+}
 
 int main()
 {
   printf("Hello from Nios II!\n");
 
-  IOWR_32DIRECT(PARALLELPORT_LED_BASE, 4*3, 0xffffffff);
-  while(1) {
-	  uint32_t btns = IORD_ALTERA_AVALON_PIO_DATA(PIO_BTN_BASE);
-	  bool btn_val[] = {
-		  btns & 1,
-		  btns & 2,
-		  btns & 4
-	  };
-
-	  //printf("%d %d %d\n", btn_val[0], btn_val[1], btn_val[2]);
-
-	  uint32_t led_val = 0;
-	  for(int i = 2; i >= 0; i--) {
-		  led_val = led_val << 3;
-		  if(btn_val[i])
-			  led_val |= 7;
-	  }
-	  IOWR_32DIRECT(PARALLELPORT_LED_BASE, 0, led_val);
-  }
+  measurement1();
 
   return 0;
 }
