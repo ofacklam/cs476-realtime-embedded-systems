@@ -23,10 +23,18 @@
 #include "altera_avalon_pio_regs.h"
 #include "altera_avalon_timer_regs.h"
 
+#define TIMER_MAXVAL 0xffff
+#define SP_COUNTER_REGCOUNT 0
+#define SP_COUNTER_REGRST 1
+#define SP_COUNTER_REGSTART 2
+#define SP_COUNTER_REGSTOP 3
+#define SP_COUNTER_REGIEN 4
+#define SP_COUNTER_CLRINT 5
+
 int done = 0;
 uint16_t timestamp;
 
-static void timer_isr(void *context) {
+static void timer_isr_response(void *context) {
 	// trigger a snapshot by writing arbitrary value
 	IOWR_ALTERA_AVALON_TIMER_SNAPL(TIMER_0_BASE, 0);
 
@@ -34,53 +42,79 @@ static void timer_isr(void *context) {
 	timestamp = IORD_ALTERA_AVALON_TIMER_SNAPL(TIMER_0_BASE);
 
 	// clear interrupt & stop timer
-	IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE, 11); //b1011
+	IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE, 1 << ALTERA_AVALON_TIMER_CONTROL_STOP_OFST);
 	IOWR_ALTERA_AVALON_TIMER_STATUS(TIMER_0_BASE, 0);
 
 	done = 1;
 }
 
-void setup_timer() {
+static void timer_isr_recovery(void *context) {
+	// clear interrupt
+	IOWR_ALTERA_AVALON_TIMER_STATUS(TIMER_0_BASE, 0);
+
+	// start specific counter
+	IOWR_32DIRECT(SP_COUNTER_0_BASE, SP_COUNTER_REGSTART*4, 1);
+}
+
+void setup_timer(int cont) {
 	// clear status (pending interrupt)
 	IOWR_ALTERA_AVALON_TIMER_STATUS(TIMER_0_BASE, 0);
 	// stop timer
 	IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE, 1 << ALTERA_AVALON_TIMER_CONTROL_STOP_OFST);
 
 	// set period
-	IOWR_ALTERA_AVALON_TIMER_PERIODL(TIMER_0_BASE, 0xffff);
+	IOWR_ALTERA_AVALON_TIMER_PERIODL(TIMER_0_BASE, TIMER_MAXVAL);
 	IOWR_ALTERA_AVALON_TIMER_PERIODH(TIMER_0_BASE, 0x0000);
 
-	// enable continuous mode & interrupt
-	IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE, 3);
+	// enable interrupt & continuous mode (depending on flag)
+	IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE, 1 | cont << ALTERA_AVALON_TIMER_CONTROL_CONT_OFST);
 	// start timer
-	IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE, 7);
+	IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE, 5 | cont << ALTERA_AVALON_TIMER_CONTROL_CONT_OFST);
 }
 
-void measurement1() {
+void setup_specific_counter() {
+	// clear & disable interrupt
+	IOWR_32DIRECT(SP_COUNTER_0_BASE, SP_COUNTER_CLRINT*4, 1);
+	IOWR_32DIRECT(SP_COUNTER_0_BASE, SP_COUNTER_REGIEN*4, 0);
+
+	// stop & reset counter
+	IOWR_32DIRECT(SP_COUNTER_0_BASE, SP_COUNTER_REGSTOP*4, 1);
+	IOWR_32DIRECT(SP_COUNTER_0_BASE, SP_COUNTER_REGRST*4, 1);
+}
+
+void measurement_response_timer() {
 	// register timer ISR
-	alt_ic_isr_register(TIMER_0_IRQ_INTERRUPT_CONTROLLER_ID, TIMER_0_IRQ, timer_isr, NULL, NULL);
-	// setup timer config
-	setup_timer();
+	alt_ic_isr_register(TIMER_0_IRQ_INTERRUPT_CONTROLLER_ID, TIMER_0_IRQ, timer_isr_response, NULL, NULL);
+	// setup timer config in continuous mode
+	setup_timer(1);
 
-	while(1) {
-		if(done) {
-			// print response time
-			uint16_t elapsed = 0xffff - timestamp + 1;
-			printf("Interrupt response time: %d cycles\n", elapsed);
+	while(!done); // wait for the measurement to finish
 
-			// start counter again
-			//done = 0;
-			//IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE, 7);
-			break;
-		}
-	}
+	// print response time
+	uint16_t elapsed = TIMER_MAXVAL - timestamp + 1;
+	printf("Interrupt response time: %d cycles\n", elapsed);
+}
+
+void measurement_recovery_timer() {
+	// register timer ISR
+	alt_ic_isr_register(TIMER_0_IRQ_INTERRUPT_CONTROLLER_ID, TIMER_0_IRQ, timer_isr_recovery, NULL, NULL);
+	// setup timer (non-continuous mode) & counter
+	setup_specific_counter();
+	setup_timer(0);
+
+	// wait for measurement to finish
+	uint32_t counter_val;
+	while(0 == (counter_val = IORD_32DIRECT(SP_COUNTER_0_BASE, SP_COUNTER_REGCOUNT*4)));
+
+	// print recovery time
+	printf("Interrupt recovery time: %ld cycles\n", counter_val);
 }
 
 int main()
 {
   printf("Hello from Nios II!\n");
 
-  measurement1();
+  measurement_recovery_timer();
 
   return 0;
 }
