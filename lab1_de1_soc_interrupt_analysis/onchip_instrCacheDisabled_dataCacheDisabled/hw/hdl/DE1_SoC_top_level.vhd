@@ -72,7 +72,7 @@ entity DE1_SoC_top_level is
         KEY_N            : in    std_logic_vector(3 downto 0);
 
         -- LED
-        LEDR             : out   std_logic_vector(9 downto 0)
+        -- LEDR             : out   std_logic_vector(9 downto 0)
 
         -- PS2
         -- PS2_CLK          : inout std_logic;
@@ -101,7 +101,7 @@ entity DE1_SoC_top_level is
         -- VGA_VS           : out   std_logic;
 
         -- GPIO_0
-        -- GPIO_0_D           : inout std_logic_vector(35 downto 0);
+        GPIO_0_D           : inout std_logic_vector(35 downto 0)
 
         -- GPIO_1
         -- GPIO_1_D           : inout std_logic_vector(35 downto 0);
@@ -166,27 +166,21 @@ architecture rtl of DE1_SoC_top_level is
 
     component soc_system is
 		port (
-			clk_clk                                 : in    std_logic                    := 'X';             -- clk
-			parallelport_led_conduit_parport_export : inout std_logic_vector(9 downto 0) := (others => 'X'); -- export
-			reset_reset_n                           : in    std_logic                    := 'X';             -- reset_n
-			pio_btn_external_connection_export      : in    std_logic_vector(2 downto 0) := (others => 'X')  -- export
+			clk_clk                             : in    std_logic                    := 'X';             -- clk
+			parallelport_conduit_parport_export : inout std_logic_vector(7 downto 0) := (others => 'X'); -- export
+			pio_external_connection_export      : in    std_logic_vector(3 downto 0) := (others => 'X'); -- export
+			reset_reset_n                       : in    std_logic                    := 'X'              -- reset_n
 		);
 	end component soc_system;
 
-    signal leds: std_logic_vector(9 downto 0);
-    signal btns: std_logic_vector(2 downto 0);
-
 begin
-
-    LEDR <= leds;
-    btns <= not KEY_N(3 downto 1);
 
     u0 : component soc_system
 		port map (
-			clk_clk                                 => CLOCK_50,            --                              clk.clk
-			parallelport_led_conduit_parport_export => leds,                -- parallelport_led_conduit_parport.export
-			reset_reset_n                           => KEY_N(0),            --                            reset.reset_n
-			pio_btn_external_connection_export      => btns                 --      pio_btn_external_connection.export
+			clk_clk                             => CLOCK_50,                            --                          clk.clk
+			parallelport_conduit_parport_export => GPIO_0_D(7 downto 0),                -- parallelport_conduit_parport.export
+			pio_external_connection_export      => KEY_N,                               --      pio_external_connection.export
+			reset_reset_n                       => KEY_N(0)                             --                        reset.reset_n
 		);
 
 end;
