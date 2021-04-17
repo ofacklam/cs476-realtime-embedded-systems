@@ -30,6 +30,12 @@
 #define SP_COUNTER_REGSTOP 3
 #define SP_COUNTER_REGIEN 4
 #define SP_COUNTER_CLRINT 5
+#define PARPORT_REGVAL 0
+#define PARPORT_REGSET 1
+#define PARPORT_REGCLR 2
+#define PARPORT_REGDIR 3
+#define PARPORT_REGIEN 5
+#define PARPORT_CLRINT 6
 
 int done = 0;
 uint16_t timestamp;
@@ -56,6 +62,27 @@ static void timer_isr_recovery(void *context) {
 	IOWR_32DIRECT(SP_COUNTER_0_BASE, SP_COUNTER_REGSTART*4, 1);
 }
 
+static void pio_isr_response(void *context) {
+	// clear bit 0
+	IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_REGCLR*4, 1);
+
+	// clear interrupt
+	IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_CLRINT*4, 0xffffffff);
+}
+
+static void pio_isr_recovery(void *context) {
+	// disable interrupt
+	IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_REGIEN*4, 0);
+
+	// clear bit 0
+	IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_REGCLR*4, 1);
+}
+
+static void pio_isr_latency(void *context) {
+	// clear interrupt
+	IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_CLRINT*4, 0xffffffff);
+}
+
 void setup_timer(int cont) {
 	// clear status (pending interrupt)
 	IOWR_ALTERA_AVALON_TIMER_STATUS(TIMER_0_BASE, 0);
@@ -80,6 +107,19 @@ void setup_specific_counter() {
 	// stop & reset counter
 	IOWR_32DIRECT(SP_COUNTER_0_BASE, SP_COUNTER_REGSTOP*4, 1);
 	IOWR_32DIRECT(SP_COUNTER_0_BASE, SP_COUNTER_REGRST*4, 1);
+}
+
+void setup_parallel_port(uint32_t init_val, uint32_t intenable) {
+	// disable interrupts
+	IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_REGIEN*4, 0);
+
+	// set all to output mode and initialize
+	IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_REGDIR*4, 0xffffffff);
+	IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_REGVAL*4, init_val);
+
+	// clear & enable interrupts
+	IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_CLRINT*4, 0xffffffff);
+	IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_REGIEN*4, intenable);
 }
 
 void measurement_response_timer() {
@@ -110,11 +150,38 @@ void measurement_recovery_timer() {
 	printf("Interrupt recovery time: %ld cycles\n", counter_val);
 }
 
+void measurement_pio_period() {
+	// setup parallel port
+	setup_parallel_port(0, 0);
+
+	while(1) {
+		IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_REGSET*4, 1);
+		IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_REGCLR*4, 1);
+		IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_REGSET*4, 1);
+		IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_REGCLR*4, 1);
+	}
+}
+
+void measurement_pio(alt_isr_func isr) {
+	// register pio ISR
+	alt_ic_isr_register(PARALLELPORT_0_IRQ_INTERRUPT_CONTROLLER_ID, PARALLELPORT_0_IRQ, isr, NULL, NULL);
+	// setup parallel port
+	setup_parallel_port(0, 0xffffffff);
+
+	// infinite loop of setting bit 0
+	while(1)
+		IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_REGSET*4, 1);
+}
+
 int main()
 {
   printf("Hello from Nios II!\n");
 
-  measurement_recovery_timer();
+  //measurement_response_timer();
+  //measurement_recovery_timer();
+  //measurement_pio(pio_isr_response);
+  //measurement_pio(pio_isr_recovery);
+  measurement_pio(pio_isr_latency);
 
   return 0;
 }

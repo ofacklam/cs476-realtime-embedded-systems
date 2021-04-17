@@ -40,6 +40,7 @@
  */
 #ifndef ALT_CPU_EIC_PRESENT
 
+#include "io.h"
 #include "sys/alt_irq.h"
 #include "os/alt_hooks.h"
 
@@ -79,6 +80,7 @@ struct ALT_IRQ_HANDLER
 void alt_irq_handler (void) __attribute__ ((section (".exceptions")));
 void alt_irq_handler (void)
 {
+	IOWR_32DIRECT(PARALLELPORT_0_BASE, 2*4, 1);
 #ifdef ALT_CI_INTERRUPT_VECTOR
   alt_32 offset;
   char*  alt_irq_base = (char*)alt_irq;
