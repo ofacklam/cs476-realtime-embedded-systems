@@ -1,0 +1,11 @@
+# Compilation intermediates
+*.o
+*.d
+# Compilation results
+*.elf
+*.map
+*.objdump
+*.a
+
+archive
+
