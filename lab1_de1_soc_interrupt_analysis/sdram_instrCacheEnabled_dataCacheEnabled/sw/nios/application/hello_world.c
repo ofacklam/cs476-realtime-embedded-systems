@@ -62,20 +62,12 @@ static void timer_isr_recovery(void *context) {
 	IOWR_32DIRECT(SP_COUNTER_0_BASE, SP_COUNTER_REGSTART*4, 1);
 }
 
-static void pio_isr_response(void *context) {
+static void pio_isr_response_recovery(void *context) {
 	// clear bit 0
 	IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_REGCLR*4, 1);
 
 	// clear interrupt
 	IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_CLRINT*4, 0xffffffff);
-}
-
-static void pio_isr_recovery(void *context) {
-	// disable interrupt
-	IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_REGIEN*4, 0);
-
-	// clear bit 0
-	IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_REGCLR*4, 1);
 }
 
 static void pio_isr_latency(void *context) {
@@ -128,11 +120,19 @@ void measurement_response_timer() {
 	// setup timer config in continuous mode
 	setup_timer(1);
 
-	while(!done); // wait for the measurement to finish
+	while(1) {
+		while(!done); // wait for the measurement to finish
 
-	// print response time
-	uint16_t elapsed = TIMER_MAXVAL - timestamp + 1;
-	printf("Interrupt response time: %d cycles\n", elapsed);
+		// print response time
+		uint16_t elapsed = TIMER_MAXVAL - timestamp + 1;
+		printf("Interrupt response time: %d cycles\n", elapsed);
+
+		// restart timer
+		done = 0;
+		IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE, 3);
+		IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE, 7);
+	}
+
 }
 
 void measurement_recovery_timer() {
@@ -142,12 +142,19 @@ void measurement_recovery_timer() {
 	setup_specific_counter();
 	setup_timer(0);
 
-	// wait for measurement to finish
-	uint32_t counter_val;
-	while(0 == (counter_val = IORD_32DIRECT(SP_COUNTER_0_BASE, SP_COUNTER_REGCOUNT*4)));
+	while(1) {
+		// wait for measurement to finish
+		uint32_t counter_val;
+		while(0 == (counter_val = IORD_32DIRECT(SP_COUNTER_0_BASE, SP_COUNTER_REGCOUNT*4)));
 
-	// print recovery time
-	printf("Interrupt recovery time: %ld cycles\n", counter_val);
+		// print recovery time
+		printf("Interrupt recovery time: %ld cycles\n", counter_val);
+
+		// reset counter & restart
+		IOWR_32DIRECT(SP_COUNTER_0_BASE, SP_COUNTER_REGSTOP*4, 1);
+		IOWR_32DIRECT(SP_COUNTER_0_BASE, SP_COUNTER_REGRST*4, 1);
+		IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE, 7);
+	}
 }
 
 void measurement_pio_period() {
@@ -179,9 +186,9 @@ int main()
 
   //measurement_response_timer();
   //measurement_recovery_timer();
-  measurement_pio(pio_isr_response);
-  //measurement_pio(pio_isr_recovery);
+  //measurement_pio(pio_isr_response_recovery);
   //measurement_pio(pio_isr_latency);
+  measurement_pio_period();
 
   return 0;
 }
