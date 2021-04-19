@@ -177,11 +177,11 @@ int main()
 {
   printf("Hello from Nios II!\n");
 
-  measurement_response_timer();
+  //measurement_response_timer();
   //measurement_recovery_timer();
   //measurement_pio(pio_isr_response);
   //measurement_pio(pio_isr_recovery);
-  //measurement_pio(pio_isr_latency);
+  measurement_pio(pio_isr_latency);
 
   return 0;
 }
