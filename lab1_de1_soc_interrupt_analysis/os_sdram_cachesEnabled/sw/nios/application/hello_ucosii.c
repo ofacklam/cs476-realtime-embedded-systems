@@ -165,7 +165,7 @@ void task_semaphore(void* pdata) {
 		set_output_bit(0);
 
 		if(err == OS_ERR_NONE)
-			printf("Semaphore time = %d cycles\n", elapsed);
+			printf("Semaphore time = %ld cycles\n", elapsed);
 		else
 			printf("Error getting semaphore\n");
 	}
@@ -185,7 +185,26 @@ void semaphore_measurement() {
 /**
  * Flag measurements
  */
-void isr_flag(void *context) {
+void isr_flag_or(void *context) {
+	// get all falling edges
+	uint8_t edges = get_edge_capture(0x0f);
+	uint8_t input = get_input_bit(0x0f);
+	uint8_t falling_edges = edges & ~input;
+
+	// clear interrupt
+	clear_edge_capture();
+
+	// signal flags & start measurements
+	if(falling_edges != 0) {
+		uint8_t err;
+		reset_counter();
+		OSFlagPost(flags, falling_edges, OS_FLAG_SET, &err);
+		start_counter();
+		set_output_bit(1);
+	}
+}
+
+void isr_flag_and(void *context) {
 	// get all falling edges
 	uint8_t edges = get_edge_capture(0x0f);
 	uint8_t input = get_input_bit(0x0f);
@@ -197,9 +216,11 @@ void isr_flag(void *context) {
 	// signal flags & start measurements
 	uint8_t err;
 	reset_counter();
-	OSFlagPost(flags, falling_edges, OS_FLAG_SET, &err);
-	start_counter();
-	set_output_bit(1);
+	OS_FLAGS f = OSFlagPost(flags, falling_edges, OS_FLAG_SET, &err);
+	if(f == 0x0f) {
+		start_counter();
+		set_output_bit(1);
+	}
 }
 
 void task_flag_or(void* pdata) {
@@ -211,7 +232,7 @@ void task_flag_or(void* pdata) {
 		set_output_bit(0);
 
 		if(err == OS_ERR_NONE)
-			printf("Flag (OR) time = %d cycles\n", elapsed);
+			printf("Flag (OR) time = %ld cycles\n", elapsed);
 		else
 			printf("Error getting flags\n");
 	}
@@ -226,7 +247,7 @@ void task_flag_and(void* pdata) {
 		set_output_bit(0);
 
 		if(err == OS_ERR_NONE)
-			printf("Flag (AND) time = %d cycles\n", elapsed);
+			printf("Flag (AND) time = %ld cycles\n", elapsed);
 		else
 			printf("Error getting flags\n");
 	}
@@ -238,7 +259,10 @@ void flag_measurement(uint8_t and) {
 	flags = OSFlagCreate(0, &err);
 
 	// enable interrupts
-	enable_interrupts(isr_flag);
+	if(and)
+		enable_interrupts(isr_flag_and);
+	else
+		enable_interrupts(isr_flag_or);
 
 	// create task
 	if(and)
@@ -280,10 +304,9 @@ void task_mailbox(void* pdata) {
 		uint32_t elapsed = get_counter_value();
 		set_output_bit(0);
 
-		uint32_t now = OSTimeGet();
 		if(err == OS_ERR_NONE)
-			printf("Mailbox time = %d cycles -- button %d & edge %d -- elapsed system time = %d ticks\n",
-					elapsed, m->button_number, m->edge_rising, now - m->timestamp);
+			printf("Mailbox time = %ld cycles -- button %d & edge %d -- system time = %ld ticks\n",
+					elapsed, m->button_number, m->edge_rising, m->timestamp);
 		else
 			printf("Error getting mailbox message\n");
 	}
@@ -333,10 +356,9 @@ void task_queue(void* pdata) {
 		uint32_t elapsed = get_counter_value();
 		set_output_bit(0);
 
-		uint32_t now = OSTimeGet();
 		if(err == OS_ERR_NONE)
-			printf("Queue time = %d cycles -- button %d & edge %d -- elapsed system time = %d ticks\n",
-					elapsed, m->button_number, m->edge_rising, now - m->timestamp);
+			printf("Queue time = %ld cycles -- button %d & edge %d -- system time = %ld ticks\n",
+					elapsed, m->button_number, m->edge_rising, m->timestamp);
 		else
 			printf("Error getting queue message\n");
 	}
@@ -344,7 +366,7 @@ void task_queue(void* pdata) {
 
 void queue_measurement() {
 	// create queue
-	queue = OSQCreate(msg_queue, QUEUE_SIZE);
+	queue = OSQCreate((void**)msg_queue, QUEUE_SIZE);
 
 	// enable interrupts
 	enable_interrupts(isr_queue);
@@ -356,10 +378,15 @@ void queue_measurement() {
 
 /* The main function creates two task and starts multi-tasking */
 int main(void) {
-	semaphore_measurement();
-	flag_measurement(0); //or
-	flag_measurement(1); //and
-	mailbox_measurement();
+	printf("Hello\n");
+
+	//output mode on parallel port
+	IOWR_32DIRECT(PARALLELPORT_0_BASE, PARPORT_REGDIR*4, 0xffffffff);
+
+	//semaphore_measurement();
+	//flag_measurement(0); //or
+	//flag_measurement(1); //and
+	//mailbox_measurement();
 	queue_measurement();
 
 	OSStart();
