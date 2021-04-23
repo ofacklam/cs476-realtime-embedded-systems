@@ -7,7 +7,7 @@ entity registers is
         clk:        in std_logic;
         nReset:     in std_logic;
 
-        -- Avalon signals
+        -- Avalon slave
         address:    in std_logic_vector(1 downto 0);
         read:       in std_logic;
         readdata:   out std_logic_vector(31 downto 0);
