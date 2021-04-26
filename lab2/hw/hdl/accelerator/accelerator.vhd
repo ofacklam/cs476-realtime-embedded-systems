@@ -34,7 +34,7 @@ end accelerator;
 
 architecture comp of accelerator is
 
-    type AccState is (Idle, Busy, IRQ);
+    type AccState is (Idle, Busy, IRequest);
 
     -- components
     component registers is
@@ -90,7 +90,7 @@ architecture comp of accelerator is
             -- to rest of component
             srcStart:       in std_logic_vector(31 downto 0);
             dstStart:       in std_logic_vector(31 downto 0);
-            len:            in unsigned(31 downto 0)
+            len:            in unsigned(31 downto 0);
             start:          in std_logic;
             remaining:      out unsigned(31 downto 0) := (others => '0');
 
@@ -215,7 +215,7 @@ begin
             address =>      AM_address,
             burstcount =>   AM_burstcount,
 
-            read =>         AM_read
+            read =>         AM_read,
             readdata =>     AM_readdata,
             readdatavalid =>AM_readdatavalid,
 
@@ -256,10 +256,10 @@ begin
                 when Busy =>
                     start <= '0';
                     if remaining = 0 then
-                        state <= IRQ;
+                        state <= IRequest;
                         irq <= '1';
                     end if;
-                when IRQ =>
+                when IRequest =>
                     if len = 0 then
                         state <= Idle;
                         irq <= '0';

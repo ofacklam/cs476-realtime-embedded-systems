@@ -23,7 +23,7 @@ entity dma is
         -- to rest of component
         srcStart:       in std_logic_vector(31 downto 0);
         dstStart:       in std_logic_vector(31 downto 0);
-        len:            in unsigned(31 downto 0)
+        len:            in unsigned(31 downto 0);
         start:          in std_logic;
         remaining:      out unsigned(31 downto 0) := (others => '0');
 
@@ -66,58 +66,70 @@ begin
 
     remaining <= dstLen;
 
-    procedure handleIdle is
-    begin
-        if start = '1' then
-            src <= srcStart;
-            dst <= dstStart;
-            srcLen <= len;
-            dstLen <= len;
-            srcBurstLen <= min(len, BURST_SIZE);
-            dstBurstLen <= min(len, BURST_SIZE);
-        elsif to_integer(unsigned(rdFifoSize)) + to_integer(burstLen) < FIFO_SIZE then
-            counter <= (others => '0');
-            address <= src;
-            burstcount <= srcBurstLen;
-            read <= '1';
-            state <= ReadWait;
-        elsif to_integer(wrFifoSize) >= to_integer(burstLen) then
-            counter <= (others => '0');
-            address <= dst;
-            burstcount <= dstBurstLen;
-            write <= '1';
-            state <= WriteAccess;
-        end if;
-    end procedure;
-
-    procedure processReadAccess is
-    begin
-        if readdatavalid = '1' then
-            counter <= counter + 1;
-            if counter+1 = burstLen then
-                state <= Idle;
-                src <= src + 4 * burstLen;
-                srcLen <= srcLen - burstLen;
-                srcBurstLen <= min(srcLen, BURST_SIZE);
-            end if;
-        end if;
-    end procedure;
-
-    procedure processWriteAccess is
-    begin
-        if waitrequest = '0' then
-            counter <= counter + 1;
-            if counter+1 = burstLen then
-                state <= Idle;
-                write <= '0';
-                dst <= dst + 4 * burstLen;
-                dstLen <= dstLen - burstLen;
-                dstBurstLen <= min(dstLen, BURST_SIZE);
-            end if;
-        end if;
-    end procedure;
-
     pStateMachine: process(clk, nReset)
+
+        function minimum(left: unsigned; right: integer) return unsigned is
+            variable tmp_left: integer;
+        begin
+            tmp_left := to_integer(left);
+            if tmp_left > right then
+                return to_unsigned(right, 5);
+            else
+                return to_unsigned(tmp_left, 5);
+            end if;
+        end minimum;
+
+        procedure handleIdle is
+        begin
+            if start = '1' then
+                src <= srcStart;
+                dst <= dstStart;
+                srcLen <= len;
+                dstLen <= len;
+                srcBurstLen <= minimum(len, BURST_SIZE);
+                dstBurstLen <= minimum(len, BURST_SIZE);
+            elsif to_integer(unsigned(wrFifoSize)) + to_integer(srcBurstLen) < FIFO_SIZE then
+                counter <= (others => '0');
+                address <= src;
+                burstcount <= std_logic_vector(srcBurstLen);
+                read <= '1';
+                state <= ReadWait;
+            elsif to_integer(unsigned(rdFifoSize)) >= to_integer(dstBurstLen) then
+                counter <= (others => '0');
+                address <= dst;
+                burstcount <= std_logic_vector(dstBurstLen);
+                write <= '1';
+                state <= WriteAccess;
+            end if;
+        end procedure;
+
+        procedure processReadAccess is
+        begin
+            if readdatavalid = '1' then
+                counter <= counter + 1;
+                if counter+1 = srcBurstLen then
+                    state <= Idle;
+                    src <= std_logic_vector(unsigned(src) + 4 * srcBurstLen);
+                    srcLen <= srcLen - srcBurstLen;
+                    srcBurstLen <= minimum(srcLen - srcBurstLen, BURST_SIZE);
+                end if;
+            end if;
+        end procedure;
+
+        procedure processWriteAccess is
+        begin
+            if waitrequest = '0' then
+                counter <= counter + 1;
+                if counter+1 = dstBurstLen then
+                    state <= Idle;
+                    write <= '0';
+                    dst <= std_logic_vector(unsigned(dst) + 4 * dstBurstLen);
+                    dstLen <= dstLen - dstBurstLen;
+                    dstBurstLen <= minimum(dstLen - dstBurstLen, BURST_SIZE);
+                end if;
+            end if;
+        end procedure;
+
     begin
         if nReset = '0' then
             read <= '0';
