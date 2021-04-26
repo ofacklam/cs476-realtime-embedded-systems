@@ -39,7 +39,7 @@ add_fileset QUARTUS_SYNTH QUARTUS_SYNTH "" ""
 set_fileset_property QUARTUS_SYNTH TOP_LEVEL combination
 set_fileset_property QUARTUS_SYNTH ENABLE_RELATIVE_INCLUDE_PATHS false
 set_fileset_property QUARTUS_SYNTH ENABLE_FILE_OVERWRITE_MODE false
-add_fileset_file reverse_hw.vhd VHDL PATH Documents/PSOC_ES_RTES_standard_project_template_1.2/hw/quartus/reverse_hw.vhd
+add_fileset_file reverse_hw.vhd VHDL PATH ../hdl/reverse_hw.vhd
 
 
 # 
