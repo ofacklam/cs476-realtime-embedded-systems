@@ -86,8 +86,8 @@ int main() {
 	);
 
 	setup(1000);
-	custom_instr_bit_manip(values, 1000);
-	bool res = check(1000, true);
+	accel_bit_manip(values, 1000);
+	bool res = check(1000, false);
 	printf("Check result %d\n", res);
 
 	return 0;

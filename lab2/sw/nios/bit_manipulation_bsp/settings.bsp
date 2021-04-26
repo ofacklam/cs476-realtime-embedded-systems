@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Apr 26, 2021 10:41:11 AM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1619426471990</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Apr 26, 2021 1:53:59 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1619438039695</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/vm/Documents/cs476/lab2/sw/nios/bit_manipulation_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>/home/vm/Documents/cs476/lab2/hw/quartus/system.sopcinfo</SopcDesignFile>
@@ -900,8 +900,8 @@
         </Setting>
         <MemoryMap>
                 <slaveDescriptor>onchip_memory2_0</slaveDescriptor>
-                <addressRange>0x00020000 - 0x0003FFFF</addressRange>
-                <addressSpan>131072</addressSpan>
+                <addressRange>0x00020000 - 0x0003B7FF</addressRange>
+                <addressSpan>112640</addressSpan>
                 <attributes>memory</attributes>
         </MemoryMap>
         <MemoryMap>

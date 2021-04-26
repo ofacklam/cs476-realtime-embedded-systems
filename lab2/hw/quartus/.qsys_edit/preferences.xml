@@ -7,7 +7,6 @@
    <irq preferredWidth="34" />
   </columns>
  </systemtable>
- <library
-   expandedCategories="Library/Basic Functions/Simulation; Debug and Verification/Debug and Performance,Library/Basic Functions/Bridges and Adaptors,Library/Basic Functions,Library/Basic Functions/Bridges and Adaptors/Memory Mapped,Library,Library/Basic Functions/Simulation; Debug and Verification,Project,Library/Interface Protocols,Library/Interface Protocols/Serial" />
+ <library expandedCategories="Library,Project" />
  <window width="1781" height="947" x="67" y="25" />
 </preferences>

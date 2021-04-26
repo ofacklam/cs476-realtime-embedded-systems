@@ -95,10 +95,10 @@ architecture comp of accelerator is
             remaining:      out unsigned(31 downto 0) := (others => '0');
 
             rdFifo:         out std_logic;
-            rdFifoSize:     in std_logic_vector(5 downto 0);
+            rdFifoSize:     in std_logic_vector(6 downto 0);
             rdFifoData:     in std_logic_vector(31 downto 0);
             wrFifo:         out std_logic;
-            wrFifoSize:     in std_logic_vector(5 downto 0);
+            wrFifoSize:     in std_logic_vector(6 downto 0);
             wrFifoData:     out std_logic_vector(31 downto 0)
         );
     end component dma;
@@ -232,10 +232,10 @@ begin
             remaining =>    remaining,
 
             rdFifo =>       outRead,
-            rdFifoSize =>   outSize,
+            rdFifoSize =>   outFull & outSize,
             rdFifoData =>   outQ,
             wrFifo =>       inWrite,
-            wrFifoSize =>   inSize,
+            wrFifoSize =>   inFull & inSize,
             wrFifoData =>   inData
         );
 
