@@ -40,10 +40,12 @@ void setup(int len) {
 		IOWR_32DIRECT(&values[i], 0, TEST_VALUE);
 }
 
-bool check(int len) {
-	for(int i = 0; i < len; i++)
-		if(IORD_32DIRECT(&values[i], 0) != EXPECTED_VALUE)
+bool check(int len, bool cache) {
+	for(int i = 0; i < len; i++) {
+		uint32_t val = cache ? values[i] : IORD_32DIRECT(&values[i], 0);
+		if(val != EXPECTED_VALUE)
 			return false;
+	}
 	return true;
 }
 
@@ -60,7 +62,8 @@ uint32_t custom_instr_bit_manip_1(uint32_t input) {
 }
 
 void custom_instr_bit_manip(uint32_t *tab, int size) {
-
+	for(int i = 0; i < size; i++)
+		tab[i] = custom_instr_bit_manip_1(tab[i]);
 }
 
 void accel_bit_manip(uint32_t *tab, int size) {
@@ -81,19 +84,9 @@ int main() {
 		accelerator_isr, NULL, NULL
 	);
 
-	/*done = 0;
-
-	uint32_t val;
-	IOWR_32DIRECT(&val, 0, TEST_VALUE);
-	uint32_t result;
-	IOWR_32DIRECT(REVERSE_ACCELERATOR_0_BASE, 0*4, &val);
-	IOWR_32DIRECT(REVERSE_ACCELERATOR_0_BASE, 1*4, &result);
-	IOWR_32DIRECT(REVERSE_ACCELERATOR_0_BASE, 2*4, 1);
-	while(!done);*/
-
 	setup(1000);
-	accel_bit_manip(values, 65);
-	bool res = check(65);
+	custom_instr_bit_manip(values, 1000);
+	bool res = check(1000, true);
 	printf("Check result %d\n", res);
 
 	return 0;
