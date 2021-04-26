@@ -54,7 +54,8 @@ uint32_t software_bit_manip_1(uint32_t input) {
 }
 
 void software_bit_manip(uint32_t *tab, int size) {
-
+	for(int i = 0; i < size; i++)
+		tab[i] = software_bit_manip_1(tab[i]);
 }
 
 uint32_t custom_instr_bit_manip_1(uint32_t input) {
