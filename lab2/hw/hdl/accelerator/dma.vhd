@@ -44,15 +44,15 @@ architecture comp of dma is
 
     -- signals
     signal src:             std_logic_vector(31 downto 0);
-    signal srcLen:          unsigned(31 downto 0);
-    signal srcBurstLen:     unsigned(4 downto 0);
+    signal srcLen:          unsigned(31 downto 0) := (others => '0');
+    signal srcBurstLen:     unsigned(4 downto 0) := (others => '0');
     signal dst:             std_logic_vector(31 downto 0);
-    signal dstLen:          unsigned(31 downto 0);
-    signal dstBurstLen:     unsigned(4 downto 0);
+    signal dstLen:          unsigned(31 downto 0) := (others => '0');
+    signal dstBurstLen:     unsigned(4 downto 0) := (others => '0');
 
     signal counter:         unsigned(4 downto 0);
 
-    signal state:   SM;
+    signal state:   SM := Idle;
 
 begin
 
@@ -88,13 +88,13 @@ begin
                 dstLen <= len;
                 srcBurstLen <= minimum(len, BURST_SIZE);
                 dstBurstLen <= minimum(len, BURST_SIZE);
-            elsif to_integer(unsigned(wrFifoSize)) + to_integer(srcBurstLen) < FIFO_SIZE then
+            elsif srcBurstLen > 0 and to_integer(unsigned(wrFifoSize)) + to_integer(srcBurstLen) < FIFO_SIZE then
                 counter <= (others => '0');
                 address <= src;
                 burstcount <= std_logic_vector(srcBurstLen);
                 read <= '1';
                 state <= ReadWait;
-            elsif to_integer(unsigned(rdFifoSize)) >= to_integer(dstBurstLen) then
+            elsif dstBurstLen > 0 and to_integer(unsigned(rdFifoSize)) >= to_integer(dstBurstLen) then
                 counter <= (others => '0');
                 address <= dst;
                 burstcount <= std_logic_vector(dstBurstLen);
@@ -134,7 +134,10 @@ begin
         if nReset = '0' then
             read <= '0';
             write <= '0';
-            remaining <= (others => '0');
+            srcLen <= (others => '0');
+            dstLen <= (others => '0');
+            srcBurstLen <= (others => '0');
+            dstBurstLen <= (others => '0');
             state <= Idle;
         elsif rising_edge(clk) then
             case state is

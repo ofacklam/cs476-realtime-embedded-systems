@@ -35,6 +35,7 @@ begin
                     when "00" => readdata <= srcAddr;
                     when "01" => readdata <= dstAddr;
                     when "10" => readdata <= std_logic_vector(len);
+                    when others => null;
                 end case;
             end if;
         end if;
@@ -53,6 +54,7 @@ begin
                     when "00" => srcAddr <= writedata;
                     when "01" => dstAddr <= writedata;
                     when "10" => len <= unsigned(writedata);
+                    when others => null;
                 end case;
             end if;
         end if;

@@ -34,7 +34,7 @@ end accelerator;
 
 architecture comp of accelerator is
 
-    type AccState is (Idle, Busy, IRequest);
+    type AccState is (Idle, Starting, Busy, IRequest);
 
     -- components
     component registers is
@@ -250,9 +250,10 @@ begin
             case state is
                 when Idle => 
                     if len > 0 then
-                        state <= Busy;
+                        state <= Starting;
                         start <= '1';
                     end if;
+                when Starting => state <= Busy;
                 when Busy =>
                     start <= '0';
                     if remaining = 0 then
