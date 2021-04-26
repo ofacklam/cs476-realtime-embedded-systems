@@ -26,28 +26,45 @@ entity dma is
         len:            in unsigned(31 downto 0)
         start:          in std_logic;
         remaining:      out unsigned(31 downto 0) := (others => '0');
-        rdFifoSize:     in ;
-        wrFifoSize:     in 
+
+        rdFifo:         out std_logic;
+        rdFifoSize:     in std_logic_vector(5 downto 0);
+        rdFifoData:     in std_logic_vector(31 downto 0);
+        wrFifo:         out std_logic;
+        wrFifoSize:     in std_logic_vector(5 downto 0);
+        wrFifoData:     out std_logic_vector(31 downto 0)
     );
 end dma;
 
 architecture comp of dma is
-    constant BURST_SIZE: unsigned(4 downto 0) := 16;
+    constant BURST_SIZE: positive := 16;
+    constant FIFO_SIZE: positive := 64;
 
     type SM is (Idle, ReadWait, ReadAccess, WriteAccess);
 
     -- signals
-    signal src:     std_logic_vector(31 downto 0);
-    signal srcLen:  unsigned(31 downto 0);
-    signal dst:     std_logic_vector(31 downto 0);
-    signal dstLen:  unsigned(31 downto 0);
+    signal src:             std_logic_vector(31 downto 0);
+    signal srcLen:          unsigned(31 downto 0);
+    signal srcBurstLen:     unsigned(4 downto 0);
+    signal dst:             std_logic_vector(31 downto 0);
+    signal dstLen:          unsigned(31 downto 0);
+    signal dstBurstLen:     unsigned(4 downto 0);
 
-    signal burstLen:    unsigned(4 downto 0);
-    signal counter:     unsigned(4 downto 0);
+    signal counter:         unsigned(4 downto 0);
 
     signal state:   SM;
 
 begin
+
+    -- connect FIFO reading (acknowledge show-ahead as soon as data is written to Avalon bus)
+    writedata <= rdFifoData;
+    rdFifo <= '1' when state = WriteAccess and waitrequest = '0' else '0';
+
+    -- connect FIFO writing
+    wrFifoData <= readdata;
+    wrFifo <= '1' when state = ReadAccess and readdatavalid = '1' else '0';
+
+    remaining <= dstLen;
 
     procedure handleIdle is
     begin
@@ -56,16 +73,47 @@ begin
             dst <= dstStart;
             srcLen <= len;
             dstLen <= len;
-            burstLen <= min(len, BURST_SIZE);
-        elsif rdFifoSize <= burstLen then
+            srcBurstLen <= min(len, BURST_SIZE);
+            dstBurstLen <= min(len, BURST_SIZE);
+        elsif to_integer(unsigned(rdFifoSize)) + to_integer(burstLen) < FIFO_SIZE then
             counter <= (others => '0');
             address <= src;
-            burstcount <= burstLen;
+            burstcount <= srcBurstLen;
             read <= '1';
             state <= ReadWait;
-        elsif wrFifoSize >= burstLen then
+        elsif to_integer(wrFifoSize) >= to_integer(burstLen) then
             counter <= (others => '0');
-            
+            address <= dst;
+            burstcount <= dstBurstLen;
+            write <= '1';
+            state <= WriteAccess;
+        end if;
+    end procedure;
+
+    procedure processReadAccess is
+    begin
+        if readdatavalid = '1' then
+            counter <= counter + 1;
+            if counter+1 = burstLen then
+                state <= Idle;
+                src <= src + 4 * burstLen;
+                srcLen <= srcLen - burstLen;
+                srcBurstLen <= min(srcLen, BURST_SIZE);
+            end if;
+        end if;
+    end procedure;
+
+    procedure processWriteAccess is
+    begin
+        if waitrequest = '0' then
+            counter <= counter + 1;
+            if counter+1 = burstLen then
+                state <= Idle;
+                write <= '0';
+                dst <= dst + 4 * burstLen;
+                dstLen <= dstLen - burstLen;
+                dstBurstLen <= min(dstLen, BURST_SIZE);
+            end if;
         end if;
     end procedure;
 
@@ -78,7 +126,14 @@ begin
             state <= Idle;
         elsif rising_edge(clk) then
             case state is
-                when Idle => 
+                when Idle => handleIdle;
+                when ReadWait => 
+                    if waitrequest = '0' then
+                        read <= '0';
+                        state <= ReadAccess;
+                    end if;
+                when ReadAccess => processReadAccess;
+                when WriteAccess => processWriteAccess;
             end case;
         end if;
     end process pStateMachine;
