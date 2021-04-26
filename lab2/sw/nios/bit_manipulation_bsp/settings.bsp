@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Apr 26, 2021 1:53:59 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1619438039695</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Apr 26, 2021 2:35:41 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1619440541363</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/vm/Documents/cs476/lab2/sw/nios/bit_manipulation_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>/home/vm/Documents/cs476/lab2/hw/quartus/system.sopcinfo</SopcDesignFile>
@@ -770,7 +770,7 @@
                 <SettingName>hal.enable_gprof</SettingName>
                 <Identifier>ALT_PROVIDE_GMON</Identifier>
                 <Type>Boolean</Type>
-                <Value>0</Value>
+                <Value>1</Value>
                 <DefaultValue>0</DefaultValue>
                 <DestinationFile>public_mk_define</DestinationFile>
                 <Description>Causes code to be compiled with gprof profiling enabled and the application ELF to be linked with the GPROF library. If true, adds -DALT_PROVIDE_GMON to ALT_CPPFLAGS and -pg to ALT_CFLAGS in public.mk.</Description>
