@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_gen2_0' in SOPC Builder design 'system'
  * SOPC Builder design path: /home/vm/Documents/cs476/lab2/hw/quartus/system.sopcinfo
  *
- * Generated: Mon Apr 26 12:42:27 CEST 2021
+ * Generated: Tue Apr 27 21:43:17 CEST 2021
  */
 
 /*
@@ -153,6 +153,9 @@
 #define __ACCELERATOR
 #define __ALTERA_AVALON_JTAG_UART
 #define __ALTERA_AVALON_ONCHIP_MEMORY2
+#define __ALTERA_AVALON_PERFORMANCE_COUNTER
+#define __ALTERA_AVALON_PIO
+#define __ALTERA_AVALON_TIMER
 #define __ALTERA_NIOS2_GEN2
 #define __REVERSE_CUSTOM
 
@@ -173,19 +176,19 @@
 #define ALT_NUM_INTERNAL_INTERRUPT_CONTROLLERS 1
 #define ALT_NUM_INTERRUPT_CONTROLLERS 1
 #define ALT_STDERR "/dev/jtag_uart_0"
-#define ALT_STDERR_BASE 0x41010
+#define ALT_STDERR_BASE 0x410d0
 #define ALT_STDERR_DEV jtag_uart_0
 #define ALT_STDERR_IS_JTAG_UART
 #define ALT_STDERR_PRESENT
 #define ALT_STDERR_TYPE "altera_avalon_jtag_uart"
 #define ALT_STDIN "/dev/jtag_uart_0"
-#define ALT_STDIN_BASE 0x41010
+#define ALT_STDIN_BASE 0x410d0
 #define ALT_STDIN_DEV jtag_uart_0
 #define ALT_STDIN_IS_JTAG_UART
 #define ALT_STDIN_PRESENT
 #define ALT_STDIN_TYPE "altera_avalon_jtag_uart"
 #define ALT_STDOUT "/dev/jtag_uart_0"
-#define ALT_STDOUT_BASE 0x41010
+#define ALT_STDOUT_BASE 0x410d0
 #define ALT_STDOUT_DEV jtag_uart_0
 #define ALT_STDOUT_IS_JTAG_UART
 #define ALT_STDOUT_PRESENT
@@ -210,8 +213,8 @@
  */
 
 #define ALT_MODULE_CLASS_jtag_uart_0 altera_avalon_jtag_uart
-#define JTAG_UART_0_BASE 0x41010
-#define JTAG_UART_0_IRQ 0
+#define JTAG_UART_0_BASE 0x410d0
+#define JTAG_UART_0_IRQ 1
 #define JTAG_UART_0_IRQ_INTERRUPT_CONTROLLER_ID 0
 #define JTAG_UART_0_NAME "/dev/jtag_uart_0"
 #define JTAG_UART_0_READ_DEPTH 64
@@ -245,10 +248,52 @@
 #define ONCHIP_MEMORY2_0_READ_DURING_WRITE_MODE "DONT_CARE"
 #define ONCHIP_MEMORY2_0_SINGLE_CLOCK_OP 0
 #define ONCHIP_MEMORY2_0_SIZE_MULTIPLE 1
-#define ONCHIP_MEMORY2_0_SIZE_VALUE 112640
-#define ONCHIP_MEMORY2_0_SPAN 112640
+#define ONCHIP_MEMORY2_0_SIZE_VALUE 131072
+#define ONCHIP_MEMORY2_0_SPAN 131072
 #define ONCHIP_MEMORY2_0_TYPE "altera_avalon_onchip_memory2"
 #define ONCHIP_MEMORY2_0_WRITABLE 1
+
+
+/*
+ * performance_counter_0 configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_performance_counter_0 altera_avalon_performance_counter
+#define PERFORMANCE_COUNTER_0_BASE 0x41000
+#define PERFORMANCE_COUNTER_0_HOW_MANY_SECTIONS 6
+#define PERFORMANCE_COUNTER_0_IRQ -1
+#define PERFORMANCE_COUNTER_0_IRQ_INTERRUPT_CONTROLLER_ID -1
+#define PERFORMANCE_COUNTER_0_NAME "/dev/performance_counter_0"
+#define PERFORMANCE_COUNTER_0_SPAN 128
+#define PERFORMANCE_COUNTER_0_TYPE "altera_avalon_performance_counter"
+
+
+/*
+ * pio_0 configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_pio_0 altera_avalon_pio
+#define PIO_0_BASE 0x0
+#define PIO_0_BIT_CLEARING_EDGE_REGISTER 0
+#define PIO_0_BIT_MODIFYING_OUTPUT_REGISTER 1
+#define PIO_0_CAPTURE 0
+#define PIO_0_DATA_WIDTH 8
+#define PIO_0_DO_TEST_BENCH_WIRING 0
+#define PIO_0_DRIVEN_SIM_VALUE 0
+#define PIO_0_EDGE_TYPE "NONE"
+#define PIO_0_FREQ 50000000
+#define PIO_0_HAS_IN 0
+#define PIO_0_HAS_OUT 1
+#define PIO_0_HAS_TRI 0
+#define PIO_0_IRQ -1
+#define PIO_0_IRQ_INTERRUPT_CONTROLLER_ID -1
+#define PIO_0_IRQ_TYPE "NONE"
+#define PIO_0_NAME "/dev/pio_0"
+#define PIO_0_RESET_VALUE 0
+#define PIO_0_SPAN 32
+#define PIO_0_TYPE "altera_avalon_pio"
 
 
 /*
@@ -257,11 +302,37 @@
  */
 
 #define ALT_MODULE_CLASS_reverse_accelerator_0 accelerator
-#define REVERSE_ACCELERATOR_0_BASE 0x41000
-#define REVERSE_ACCELERATOR_0_IRQ 1
+#define REVERSE_ACCELERATOR_0_BASE 0x410c0
+#define REVERSE_ACCELERATOR_0_IRQ 0
 #define REVERSE_ACCELERATOR_0_IRQ_INTERRUPT_CONTROLLER_ID 0
 #define REVERSE_ACCELERATOR_0_NAME "/dev/reverse_accelerator_0"
 #define REVERSE_ACCELERATOR_0_SPAN 16
 #define REVERSE_ACCELERATOR_0_TYPE "accelerator"
+
+
+/*
+ * timer_0 configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_timer_0 altera_avalon_timer
+#define TIMER_0_ALWAYS_RUN 0
+#define TIMER_0_BASE 0x41080
+#define TIMER_0_COUNTER_SIZE 64
+#define TIMER_0_FIXED_PERIOD 0
+#define TIMER_0_FREQ 50000000
+#define TIMER_0_IRQ 2
+#define TIMER_0_IRQ_INTERRUPT_CONTROLLER_ID 0
+#define TIMER_0_LOAD_VALUE 49
+#define TIMER_0_MULT 1.0E-6
+#define TIMER_0_NAME "/dev/timer_0"
+#define TIMER_0_PERIOD 1
+#define TIMER_0_PERIOD_UNITS "us"
+#define TIMER_0_RESET_OUTPUT 0
+#define TIMER_0_SNAPSHOT 1
+#define TIMER_0_SPAN 64
+#define TIMER_0_TICKS_PER_SEC 1000000
+#define TIMER_0_TIMEOUT_PULSE_OUTPUT 0
+#define TIMER_0_TYPE "altera_avalon_timer"
 
 #endif /* __SYSTEM_H_ */

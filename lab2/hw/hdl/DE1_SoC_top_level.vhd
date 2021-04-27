@@ -69,7 +69,7 @@ entity DE1_SoC_top_level is
         -- IRDA_TXD         : out   std_logic;
 
         -- KEY_N
-        KEY_N            : in    std_logic_vector(3 downto 0)
+        KEY_N            : in    std_logic_vector(3 downto 0);
 
         -- LED
         -- LEDR             : out   std_logic_vector(9 downto 0);
@@ -101,7 +101,7 @@ entity DE1_SoC_top_level is
         -- VGA_VS           : out   std_logic;
 
         -- GPIO_0
-        -- GPIO_0           : inout std_logic_vector(35 downto 0);
+        GPIO_0           : inout std_logic_vector(35 downto 0)
 
         -- GPIO_1
         -- GPIO_1           : inout std_logic_vector(35 downto 0);
@@ -166,8 +166,9 @@ architecture rtl of DE1_SoC_top_level is
 
     component system is
 		port (
-			clk_clk       : in std_logic := 'X'; -- clk
-			reset_reset_n : in std_logic := 'X'  -- reset_n
+			clk_clk                          : in  std_logic                    := 'X'; -- clk
+			reset_reset_n                    : in  std_logic                    := 'X'; -- reset_n
+			pio_0_external_connection_export : out std_logic_vector(7 downto 0)         -- export
 		);
 	end component system;
 
@@ -175,8 +176,9 @@ begin
 
     u0 : component system
 		port map (
-			clk_clk       => CLOCK_50,          --   clk.clk
-			reset_reset_n => KEY_N(0)           -- reset.reset_n
+			clk_clk                             => CLOCK_50,            --                       clk.clk
+			reset_reset_n                       => KEY_N(0),            --                     reset.reset_n
+            pio_0_external_connection_export    => GPIO_0(7 downto 0)   -- pio_0_external_connection.export
 		);
 
 end;
