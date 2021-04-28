@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>bit_manipulation</name>
+	<name>application</name>
 	<comment></comment>
 	<projects>
+		<project>bit_manipulation_bsp</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -20,6 +20,7 @@
 #include "system.h"
 #include "io.h"
 #include "sys/alt_irq.h"
+#include "sys/alt_cache.h"
 
 #define TEST_VALUE 0x659A659A
 #define EXPECTED_VALUE 0x9AA65965
@@ -36,6 +37,7 @@ void accelerator_isr(void *ctx) {
 
 // Setup the input vector, bypassing the cache
 void setup(int len) {
+	alt_dcache_flush_all();
 	for(int i = 0; i < len; i++)
 		IOWR_32DIRECT(&values[i], 0, TEST_VALUE);
 }
