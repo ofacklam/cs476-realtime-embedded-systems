@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Apr 29, 2021 11:13:56 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1619730836378</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Apr 30, 2021 1:03:06 AM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1619737386419</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/vm/Documents/cs476/lab2/sw/nios/bit_manipulation_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>/home/vm/Documents/cs476/lab2/hw/quartus/system.sopcinfo</SopcDesignFile>

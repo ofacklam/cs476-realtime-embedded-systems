@@ -25,10 +25,10 @@ entity accelerator is
         AS_read:        in std_logic;
         AS_readdata:    out std_logic_vector(31 downto 0);
         AS_write:       in std_logic;
-        AS_writedata:   in std_logic_vector(31 downto 0);
+        AS_writedata:   in std_logic_vector(31 downto 0)
 
         -- interrupt sender
-        irq:            out std_logic := '0'
+        -- irq:            out std_logic := '0'
     );
 end accelerator;
 
@@ -52,7 +52,8 @@ architecture comp of accelerator is
             -- to rest of component
             srcAddr:    buffer std_logic_vector(31 downto 0) := (others => '0');
             dstAddr:    buffer std_logic_vector(31 downto 0) := (others => '0');
-            len:        buffer unsigned(31 downto 0) := (others => '0')
+            len:        buffer unsigned(31 downto 0) := (others => '0');
+            done:       in std_logic
         );
     end component registers;
 
@@ -139,6 +140,7 @@ architecture comp of accelerator is
     signal outEmpty:         std_logic;
     signal outSize:          std_logic_vector(5 downto 0);
 
+    signal done:            std_logic := '0';
     signal start:           std_logic := '0';
     signal remaining:       unsigned(31 downto 0);
 
@@ -162,7 +164,8 @@ begin
             -- to rest of component
             srcAddr =>      srcAddr,  
             dstAddr =>      dstAddr,
-            len =>          len
+            len =>          len,
+            done =>         done
         );
 
     -- 2 FIFOs
@@ -243,7 +246,7 @@ begin
     state_machine: process(clk, nReset)
     begin
         if nReset = '0' then
-            irq <= '0';
+            done <= '0';
             start <= '0';
             state <= Idle;
         elsif rising_edge(clk) then
@@ -258,12 +261,12 @@ begin
                     start <= '0';
                     if remaining = 0 then
                         state <= IRequest;
-                        irq <= '1';
+                        done <= '1';
                     end if;
                 when IRequest =>
                     if len = 0 then
                         state <= Idle;
-                        irq <= '0';
+                        done <= '0';
                     end if;
             end case;
         end if;

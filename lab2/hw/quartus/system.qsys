@@ -121,6 +121,14 @@
          type = "int";
       }
    }
+   element system
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone V";
+         type = "String";
+      }
+   }
    element timer_0
    {
       datum _sortIndex
@@ -260,7 +268,7 @@
   <parameter name="instruction_master_high_performance_paddr_size" value="0" />
   <parameter name="instruction_master_paddr_base" value="0" />
   <parameter name="instruction_master_paddr_size" value="0" />
-  <parameter name="internalIrqMaskSystemInfo" value="7" />
+  <parameter name="internalIrqMaskSystemInfo" value="3" />
   <parameter name="io_regionbase" value="0" />
   <parameter name="io_regionsize" value="0" />
   <parameter name="master_addr_map" value="false" />
@@ -439,8 +447,8 @@
   <parameter name="alwaysRun" value="false" />
   <parameter name="counterSize" value="64" />
   <parameter name="fixedPeriod" value="false" />
-  <parameter name="period" value="1" />
-  <parameter name="periodUnits" value="MSEC" />
+  <parameter name="period" value="100" />
+  <parameter name="periodUnits" value="USEC" />
   <parameter name="resetOutput" value="false" />
   <parameter name="snapshot" value="true" />
   <parameter name="systemFrequency" value="50000000" />
@@ -560,22 +568,15 @@
    kind="interrupt"
    version="18.1"
    start="nios2_gen2_0.irq"
-   end="reverse_accelerator_0.interrupt_sender">
+   end="jtag_uart_0.irq">
   <parameter name="irqNumber" value="0" />
  </connection>
  <connection
    kind="interrupt"
    version="18.1"
    start="nios2_gen2_0.irq"
-   end="jtag_uart_0.irq">
-  <parameter name="irqNumber" value="1" />
- </connection>
- <connection
-   kind="interrupt"
-   version="18.1"
-   start="nios2_gen2_0.irq"
    end="timer_0.irq">
-  <parameter name="irqNumber" value="2" />
+  <parameter name="irqNumber" value="1" />
  </connection>
  <connection
    kind="nios_custom_instruction"

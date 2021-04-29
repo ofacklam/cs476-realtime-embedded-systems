@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_gen2_0' in SOPC Builder design 'system'
  * SOPC Builder design path: /home/vm/Documents/cs476/lab2/hw/quartus/system.sopcinfo
  *
- * Generated: Thu Apr 29 22:14:44 CEST 2021
+ * Generated: Fri Apr 30 01:03:07 CEST 2021
  */
 
 /*
@@ -214,7 +214,7 @@
 
 #define ALT_MODULE_CLASS_jtag_uart_0 altera_avalon_jtag_uart
 #define JTAG_UART_0_BASE 0x810f0
-#define JTAG_UART_0_IRQ 1
+#define JTAG_UART_0_IRQ 0
 #define JTAG_UART_0_IRQ_INTERRUPT_CONTROLLER_ID 0
 #define JTAG_UART_0_NAME "/dev/jtag_uart_0"
 #define JTAG_UART_0_READ_DEPTH 64
@@ -303,8 +303,8 @@
 
 #define ALT_MODULE_CLASS_reverse_accelerator_0 accelerator
 #define REVERSE_ACCELERATOR_0_BASE 0x810e0
-#define REVERSE_ACCELERATOR_0_IRQ 0
-#define REVERSE_ACCELERATOR_0_IRQ_INTERRUPT_CONTROLLER_ID 0
+#define REVERSE_ACCELERATOR_0_IRQ -1
+#define REVERSE_ACCELERATOR_0_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define REVERSE_ACCELERATOR_0_NAME "/dev/reverse_accelerator_0"
 #define REVERSE_ACCELERATOR_0_SPAN 16
 #define REVERSE_ACCELERATOR_0_TYPE "accelerator"
@@ -321,17 +321,17 @@
 #define TIMER_0_COUNTER_SIZE 64
 #define TIMER_0_FIXED_PERIOD 0
 #define TIMER_0_FREQ 50000000
-#define TIMER_0_IRQ 2
+#define TIMER_0_IRQ 1
 #define TIMER_0_IRQ_INTERRUPT_CONTROLLER_ID 0
-#define TIMER_0_LOAD_VALUE 49999
-#define TIMER_0_MULT 0.001
+#define TIMER_0_LOAD_VALUE 4999
+#define TIMER_0_MULT 1.0E-6
 #define TIMER_0_NAME "/dev/timer_0"
-#define TIMER_0_PERIOD 1
-#define TIMER_0_PERIOD_UNITS "ms"
+#define TIMER_0_PERIOD 100
+#define TIMER_0_PERIOD_UNITS "us"
 #define TIMER_0_RESET_OUTPUT 0
 #define TIMER_0_SNAPSHOT 1
 #define TIMER_0_SPAN 64
-#define TIMER_0_TICKS_PER_SEC 1000
+#define TIMER_0_TICKS_PER_SEC 10000
 #define TIMER_0_TIMEOUT_PULSE_OUTPUT 0
 #define TIMER_0_TYPE "altera_avalon_timer"
 

@@ -17,7 +17,8 @@ entity registers is
         -- to rest of component
         srcAddr:    buffer std_logic_vector(31 downto 0) := (others => '0');
         dstAddr:    buffer std_logic_vector(31 downto 0) := (others => '0');
-        len:        buffer unsigned(31 downto 0) := (others => '0')
+        len:        buffer unsigned(31 downto 0) := (others => '0');
+        done:       in std_logic
     );
 end registers;
 
@@ -35,6 +36,7 @@ begin
                     when "00" => readdata <= srcAddr;
                     when "01" => readdata <= dstAddr;
                     when "10" => readdata <= std_logic_vector(len);
+                    when "11" => readdata <= (0 => done, others => '0');
                     when others => null;
                 end case;
             end if;
