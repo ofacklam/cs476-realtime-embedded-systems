@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Apr 28, 2021 10:35:01 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1619642101717</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Apr 29, 2021 11:13:56 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1619730836378</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/vm/Documents/cs476/lab2/sw/nios/bit_manipulation_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>/home/vm/Documents/cs476/lab2/hw/quartus/system.sopcinfo</SopcDesignFile>
@@ -899,38 +899,38 @@
                 <Group xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
         </Setting>
         <MemoryMap>
-                <slaveDescriptor>pio_0</slaveDescriptor>
-                <addressRange>0x00000000 - 0x0000001F</addressRange>
-                <addressSpan>32</addressSpan>
-                <attributes/>
-        </MemoryMap>
-        <MemoryMap>
                 <slaveDescriptor>onchip_memory2_0</slaveDescriptor>
-                <addressRange>0x00020000 - 0x0003FFFF</addressRange>
-                <addressSpan>131072</addressSpan>
+                <addressRange>0x00040000 - 0x0007FFFF</addressRange>
+                <addressSpan>262144</addressSpan>
                 <attributes>memory</attributes>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>performance_counter_0</slaveDescriptor>
-                <addressRange>0x00041000 - 0x0004107F</addressRange>
+                <addressRange>0x00081000 - 0x0008107F</addressRange>
                 <addressSpan>128</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>timer_0</slaveDescriptor>
-                <addressRange>0x00041080 - 0x000410BF</addressRange>
+                <addressRange>0x00081080 - 0x000810BF</addressRange>
                 <addressSpan>64</addressSpan>
                 <attributes>timer</attributes>
         </MemoryMap>
         <MemoryMap>
+                <slaveDescriptor>pio_0</slaveDescriptor>
+                <addressRange>0x000810C0 - 0x000810DF</addressRange>
+                <addressSpan>32</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
                 <slaveDescriptor>reverse_accelerator_0</slaveDescriptor>
-                <addressRange>0x000410C0 - 0x000410CF</addressRange>
+                <addressRange>0x000810E0 - 0x000810EF</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>jtag_uart_0</slaveDescriptor>
-                <addressRange>0x000410D0 - 0x000410D7</addressRange>
+                <addressRange>0x000810F0 - 0x000810F7</addressRange>
                 <addressSpan>8</addressSpan>
                 <attributes>printable</attributes>
         </MemoryMap>

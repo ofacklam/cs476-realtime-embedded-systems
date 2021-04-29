@@ -28,7 +28,7 @@ entity accelerator is
         AS_writedata:   in std_logic_vector(31 downto 0);
 
         -- interrupt sender
-        irq:            out std_logic
+        irq:            out std_logic := '0'
     );
 end accelerator;
 
@@ -139,10 +139,10 @@ architecture comp of accelerator is
     signal outEmpty:         std_logic;
     signal outSize:          std_logic_vector(5 downto 0);
 
-    signal start:           std_logic;
+    signal start:           std_logic := '0';
     signal remaining:       unsigned(31 downto 0);
 
-    signal state:   AccState;
+    signal state:   AccState := Idle;
 
 begin
 

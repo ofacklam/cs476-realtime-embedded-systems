@@ -37,7 +37,7 @@ void accelerator_isr(void *ctx) {
 
 // Setup the input vector, bypassing the cache
 void setup(int len) {
-	alt_dcache_flush_all();
+	//alt_dcache_flush_all();
 	for(int i = 0; i < len; i++)
 		IOWR_32DIRECT(&values[i], 0, TEST_VALUE);
 }
@@ -134,11 +134,11 @@ void accel_bit_manip(uint32_t *tab, int size) {
 int main() {
 	printf("Hello from Nios II!\n");
 
-	alt_ic_isr_register(
+	/*alt_ic_isr_register(
 		REVERSE_ACCELERATOR_0_IRQ_INTERRUPT_CONTROLLER_ID,
 		REVERSE_ACCELERATOR_0_IRQ,
 		accelerator_isr, NULL, NULL
-	);
+	);*/
 
 	bool res = false;
 
@@ -148,7 +148,7 @@ int main() {
 	res = check(1, true);
 	printf("Software flip (1 value) check result %d\n", res);
 
-	setup(1);
+	/*setup(1);
 	custom_instr_bit_manip(values, 1);
 	res = check(1, true);
 	printf("Custom instr. flip (1 value) check result %d\n", res);
@@ -159,7 +159,7 @@ int main() {
 	printf("Accelerator flip (1 value) check result %d\n", res);
 
 	/* Phase 2: 1000 values */
-	setup(1000);
+	/*setup(1000);
 	software_bit_manip(values, 1000);
 	res = check(1000, true);
 	printf("Software flip (1000 values) check result %d\n", res);
@@ -172,7 +172,7 @@ int main() {
 	setup(1000);
 	accel_bit_manip(values, 1000);
 	res = check(1000, false);
-	printf("Accelerator flip (1000 value) check result %d\n", res);
+	printf("Accelerator flip (1000 value) check result %d\n", res);*/
 
 	return 0;
 }
