@@ -21,6 +21,7 @@
 #include "io.h"
 #include "sys/alt_irq.h"
 #include "sys/alt_cache.h"
+#include "altera_avalon_performance_counter.h"
 
 #define TEST_VALUE 0x659A659A
 #define EXPECTED_VALUE 0x9AA65965
@@ -93,8 +94,10 @@ uint32_t software_bit_manip_1(uint32_t input) {
 }
 
 void software_bit_manip(uint32_t *tab, int size) {
+	PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE, 1);
 	for(int i = 0; i < size; i++)
 		tab[i] = software_bit_manip_1(tab[i]);
+	PERF_END(PERFORMANCE_COUNTER_0_BASE, 1);
 }
 
 
@@ -106,8 +109,10 @@ uint32_t custom_instr_bit_manip_1(uint32_t input) {
 }
 
 void custom_instr_bit_manip(uint32_t *tab, int size) {
+	PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE, 2);
 	for(int i = 0; i < size; i++)
 		tab[i] = custom_instr_bit_manip_1(tab[i]);
+	PERF_END(PERFORMANCE_COUNTER_0_BASE, 2);
 }
 
 
@@ -115,21 +120,26 @@ void custom_instr_bit_manip(uint32_t *tab, int size) {
  * Method 3: hardware accelerator
  */
 void accel_bit_manip(uint32_t *tab, int size) {
+	PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE, 3);
+
 	IOWR_32DIRECT(REVERSE_ACCELERATOR_0_BASE, 0*4, tab);
 	IOWR_32DIRECT(REVERSE_ACCELERATOR_0_BASE, 1*4, tab);
 	IOWR_32DIRECT(REVERSE_ACCELERATOR_0_BASE, 2*4, size);
 
 	while(IORD_32DIRECT(REVERSE_ACCELERATOR_0_BASE, 3*4) == 0);
 	IOWR_32DIRECT(REVERSE_ACCELERATOR_0_BASE, 2*4, 0);
+
+	PERF_END(PERFORMANCE_COUNTER_0_BASE, 3);
 }
 
 int main() {
 	printf("Hello from Nios II!\n");
+	PERF_START_MEASURING(PERFORMANCE_COUNTER_0_BASE);
 
 	bool res = false;
 
 	/* Phase 1: only 1 value */
-	setup(1);
+	/*setup(1);
 	software_bit_manip(values, 1);
 	res = check(1, true);
 	printf("Software flip (1 value) check result %d\n", res);
@@ -142,10 +152,10 @@ int main() {
 	setup(1);
 	accel_bit_manip(values, 1);
 	res = check(1, false);
-	printf("Accelerator flip (1 value) check result %d\n", res);
+	printf("Accelerator flip (1 value) check result %d\n", res);*/
 
 	/* Phase 2: 1000 values */
-	/*setup(1000);
+	setup(1000);
 	software_bit_manip(values, 1000);
 	res = check(1000, true);
 	printf("Software flip (1000 values) check result %d\n", res);
@@ -158,7 +168,10 @@ int main() {
 	setup(1000);
 	accel_bit_manip(values, 1000);
 	res = check(1000, false);
-	printf("Accelerator flip (1000 value) check result %d\n", res);*/
+	printf("Accelerator flip (1000 value) check result %d\n", res);
+
+	PERF_STOP_MEASURING(PERFORMANCE_COUNTER_0_BASE);
+	perf_print_formatted_report(PERFORMANCE_COUNTER_0_BASE, alt_get_cpu_freq(), 3, "Software", "Instruction", "Hardware");
 
 	return 0;
 }
