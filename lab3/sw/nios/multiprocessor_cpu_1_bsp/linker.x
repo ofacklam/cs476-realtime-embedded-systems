@@ -4,7 +4,7 @@
  * Machine generated for CPU 'cpu_1' in SOPC Builder design 'system'
  * SOPC Builder design path: /home/vm/Documents/cs476/lab3/hw/quartus/system.sopcinfo
  *
- * Generated: Mon May 17 11:28:22 CEST 2021
+ * Generated: Mon May 17 12:38:36 CEST 2021
  */
 
 /*
@@ -51,13 +51,13 @@
 MEMORY
 {
     sdram_controller_common : ORIGIN = 0x0, LENGTH = 67108864
-    reset : ORIGIN = 0x4020000, LENGTH = 32
-    internal_memory_1 : ORIGIN = 0x4020020, LENGTH = 131040
+    reset : ORIGIN = 0x4040000, LENGTH = 32
+    internal_memory_1 : ORIGIN = 0x4040020, LENGTH = 153568
 }
 
 /* Define symbols for each memory base-address */
 __alt_mem_sdram_controller_common = 0x0;
-__alt_mem_internal_memory_1 = 0x4020000;
+__alt_mem_internal_memory_1 = 0x4040000;
 
 OUTPUT_FORMAT( "elf32-littlenios2",
                "elf32-littlenios2",
@@ -393,7 +393,7 @@ SECTIONS
 /*
  * Don't override this, override the __alt_stack_* symbols instead.
  */
-__alt_data_end = 0x4040000;
+__alt_data_end = 0x4065800;
 
 /*
  * The next two symbols define the location of the default stack.  You can
@@ -409,4 +409,4 @@ PROVIDE( __alt_stack_limit   = __alt_stack_base );
  * Override this symbol to put the heap in a different memory.
  */
 PROVIDE( __alt_heap_start    = end );
-PROVIDE( __alt_heap_limit    = 0x4040000 );
+PROVIDE( __alt_heap_limit    = 0x4065800 );

@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>ucosii</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>May 17, 2021 11:28:21 AM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1621243701735</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>May 17, 2021 12:38:35 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1621247915820</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/vm/Documents/cs476/lab3/sw/nios/multiprocessor_cpu_1_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>/home/vm/Documents/cs476/lab3/hw/quartus/system.sopcinfo</SopcDesignFile>
@@ -1746,61 +1746,61 @@
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>internal_memory_1</slaveDescriptor>
-                <addressRange>0x04020000 - 0x0403FFFF</addressRange>
-                <addressSpan>131072</addressSpan>
+                <addressRange>0x04040000 - 0x040657FF</addressRange>
+                <addressSpan>153600</addressSpan>
                 <attributes>memory</attributes>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>performance_counter_1</slaveDescriptor>
-                <addressRange>0x04041000 - 0x0404103F</addressRange>
+                <addressRange>0x04081000 - 0x0408103F</addressRange>
                 <addressSpan>64</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>timer_1</slaveDescriptor>
-                <addressRange>0x04041040 - 0x0404105F</addressRange>
+                <addressRange>0x04081040 - 0x0408105F</addressRange>
                 <addressSpan>32</addressSpan>
                 <attributes>timer</attributes>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>ParallelPort_common</slaveDescriptor>
-                <addressRange>0x04041060 - 0x0404107F</addressRange>
+                <addressRange>0x04081060 - 0x0408107F</addressRange>
                 <addressSpan>32</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>ParallelPort_1</slaveDescriptor>
-                <addressRange>0x04041080 - 0x0404109F</addressRange>
+                <addressRange>0x04081080 - 0x0408109F</addressRange>
                 <addressSpan>32</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>sp_counter_1</slaveDescriptor>
-                <addressRange>0x040410A0 - 0x040410BF</addressRange>
+                <addressRange>0x040810A0 - 0x040810BF</addressRange>
                 <addressSpan>32</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>mailbox_common</slaveDescriptor>
-                <addressRange>0x040410C0 - 0x040410CF</addressRange>
+                <addressRange>0x040810C0 - 0x040810CF</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>mutex_mailbox</slaveDescriptor>
-                <addressRange>0x040410D0 - 0x040410D7</addressRange>
+                <addressRange>0x040810D0 - 0x040810D7</addressRange>
                 <addressSpan>8</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>mutex_io</slaveDescriptor>
-                <addressRange>0x040410D8 - 0x040410DF</addressRange>
+                <addressRange>0x040810D8 - 0x040810DF</addressRange>
                 <addressSpan>8</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>jtag_uart_1</slaveDescriptor>
-                <addressRange>0x040410E0 - 0x040410E7</addressRange>
+                <addressRange>0x040810E0 - 0x040810E7</addressRange>
                 <addressSpan>8</addressSpan>
                 <attributes>printable</attributes>
         </MemoryMap>

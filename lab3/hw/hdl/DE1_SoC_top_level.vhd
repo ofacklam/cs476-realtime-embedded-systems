@@ -190,9 +190,9 @@ architecture rtl of DE1_SoC_top_level is
 
 begin
 
-    LEDR(9 downto 7) <= leds0(7 downto 5);
-    LEDR(6 downto 4) <= leds1(7 downto 5);
-    LEDR(3 downto 0) <= leds_common(7 downto 4);
+    LEDR(9 downto 7) <= leds0(2 downto 0);
+    LEDR(6 downto 4) <= leds1(2 downto 0);
+    LEDR(3 downto 0) <= leds_common(3 downto 0);
 
     u0 : component system
 		port map (

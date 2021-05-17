@@ -3,7 +3,7 @@
 # Machine generated for CPU 'cpu_0' in SOPC Builder design 'system'
 # SOPC Builder design path: /home/vm/Documents/cs476/lab3/hw/quartus/system.sopcinfo
 #
-# Generated: Mon May 17 10:48:00 CEST 2021
+# Generated: Mon May 17 12:38:26 CEST 2021
 
 # DO NOT MODIFY THIS FILE
 #
@@ -50,4 +50,4 @@
 memory 0x0 0x4000000 cache
 
 # internal_memory_0
-memory 0x4020000 0x4040000 cache
+memory 0x4040000 0x4065800 cache

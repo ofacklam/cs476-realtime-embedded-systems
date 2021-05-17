@@ -30,21 +30,62 @@
 
 #include <stdio.h>
 #include "includes.h"
+#include "system.h"
+#include "io.h"
+#include <stdint.h>
 
 /* Definition of Task Stacks */
-#define   TASK_STACKSIZE       2048
+#define   TASK_STACKSIZE       1024
 OS_STK    task1_stk[TASK_STACKSIZE];
 
 /* Definition of Task Priorities */
 
 #define TASK1_PRIORITY      1
 
+/**
+ * MANIPULATION 1
+ */
+void manip1() {
+	while (1) {
+		printf("Hello from uC/OS-II on CPU0\n");
+		OSTimeDlyHMSM(0, 0, 3, 0);
+	}
+}
+
+/**
+ * MANIPULATION 2
+ */
+void setup() {
+	IOWR_32DIRECT(PARALLELPORT_0_BASE, 3*4, 0xffffffff);
+	IOWR_32DIRECT(PARALLELPORT_COMMON_BASE, 3*4, 0xffffffff);
+	IOWR_32DIRECT(SP_COUNTER_0_BASE, 2*4, 1);
+}
+
+void increment(uint32_t base) {
+	uint8_t val = IORD_32DIRECT(base, 0);
+	IOWR_32DIRECT(base, 0, val+1);
+}
+
+void safe_increment(uint32_t base) {
+
+}
+
+void manip2_part1() {
+	setup();
+
+	while(1) {
+		uint32_t start = IORD_32DIRECT(SP_COUNTER_0_BASE, 0);
+		increment(PARALLELPORT_0_BASE);
+		increment(PARALLELPORT_COMMON_BASE);
+		uint32_t end = IORD_32DIRECT(SP_COUNTER_0_BASE, 0);
+		printf("Access time for 2 parallel port increments: %d cycles\n", end-start);
+		OSTimeDlyHMSM(0, 0, 0, 50);
+	}
+}
+
 /* Prints "Hello World" and sleeps for three seconds */
 void task1(void* pdata) {
-  while (1) {
-    printf("Hello from uC/OS-II on CPU0\n");
-    OSTimeDlyHMSM(0, 0, 3, 0);
-  }
+	manip2_part1();
 }
 
 /* The main function creates two task and starts multi-tasking */
