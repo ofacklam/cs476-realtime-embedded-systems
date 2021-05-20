@@ -75,6 +75,7 @@ begin
                     when "011" => iRegDir <= writedata(width-1 downto 0);
                     when "101" => iRegIEn <= writedata(width-1 downto 0);
                     when "110" => iRegClrInt <= writedata(width-1 downto 0);
+                    when "111" => iRegPort <= std_logic_vector(unsigned(iRegPort) + unsigned(writedata(width-1 downto 0)))
                     when others => null;
                 end case;
             end if;
