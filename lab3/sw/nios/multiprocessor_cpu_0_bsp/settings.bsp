@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>ucosii</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>May 20, 2021 2:18:56 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1621513136768</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>May 20, 2021 3:36:40 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1621517800253</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/vm/Documents/cs476/lab3/sw/nios/multiprocessor_cpu_0_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>/home/vm/Documents/cs476/lab3/hw/quartus/system.sopcinfo</SopcDesignFile>

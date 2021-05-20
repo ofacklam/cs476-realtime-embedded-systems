@@ -121,6 +121,26 @@ void manip3() {
 	}
 }
 
+/**
+ * MANIPULATION 4
+ */
+void atomic_incrementBy(uint32_t base, uint8_t inc) {
+	IOWR_32DIRECT(base, 7*4, inc);
+}
+
+void manip4() {
+	setup();
+
+	while(1) {
+		uint32_t start = IORD_32DIRECT(SP_COUNTER_0_BASE, 0);
+		incrementBy(PARALLELPORT_0_BASE, 1);
+		atomic_incrementBy(PARALLELPORT_COMMON_BASE, 1);
+		uint32_t end = IORD_32DIRECT(SP_COUNTER_0_BASE, 0);
+		printf("Access time for 2 parallel port increments: %ld cycles\n", end-start);
+		OSTimeDlyHMSM(0, 0, 0, 20);
+	}
+}
+
 /* Prints "Hello World" and sleeps for three seconds */
 void task1(void* pdata) {
 	manip2_part2();
