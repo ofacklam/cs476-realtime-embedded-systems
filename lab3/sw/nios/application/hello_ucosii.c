@@ -34,6 +34,7 @@
 #include "io.h"
 #include "altera_avalon_mutex.h"
 #include "altera_avalon_mailbox_simple.h"
+#include "sys/alt_cache.h"
 #include <stdint.h>
 #include <string.h>
 
@@ -114,10 +115,11 @@ void manip3() {
 		printf("Type your message: ");
 		scanf("%s", msg);
 		size_t len = strlen(msg);
+		alt_dcache_flush_all();
 
 		toSend[1] = (alt_u32) msg;
 		altera_avalon_mailbox_send(mbox, toSend, 0, POLL);
-		msg += len;
+		msg += len+1;
 	}
 }
 
@@ -143,7 +145,7 @@ void manip4() {
 
 /* Prints "Hello World" and sleeps for three seconds */
 void task1(void* pdata) {
-	manip2_part2();
+	manip4();
 }
 
 /* The main function creates two task and starts multi-tasking */

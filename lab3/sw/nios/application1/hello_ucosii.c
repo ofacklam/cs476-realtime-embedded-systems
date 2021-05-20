@@ -35,6 +35,7 @@
 #include "io.h"
 #include "altera_avalon_mutex.h"
 #include "altera_avalon_mailbox_simple.h"
+#include "sys/alt_cache.h"
 #include <stdint.h>
 
 /* Definition of Task Stacks */
@@ -111,6 +112,7 @@ void manip3() {
 	while(1) {
 		altera_avalon_mailbox_retrieve_poll(mbox, toReceive, 0);
 
+		alt_dcache_flush_all();
 		char *msg = (void*) toReceive[1];
 		printf("%s\n", msg);
 	}
@@ -138,7 +140,7 @@ void manip4() {
 
 /* Prints "Hello World" and sleeps for three seconds */
 void task1(void* pdata) {
-  manip2_part2();
+  manip4();
 }
 
 /* The main function creates two task and starts multi-tasking */
