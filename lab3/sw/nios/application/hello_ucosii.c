@@ -32,7 +32,10 @@
 #include "includes.h"
 #include "system.h"
 #include "io.h"
+#include "altera_avalon_mutex.h"
+#include "altera_avalon_mailbox_simple.h"
 #include <stdint.h>
+#include <string.h>
 
 /* Definition of Task Stacks */
 #define   TASK_STACKSIZE       1024
@@ -61,13 +64,15 @@ void setup() {
 	IOWR_32DIRECT(SP_COUNTER_0_BASE, 2*4, 1);
 }
 
-void increment(uint32_t base) {
+void incrementBy(uint32_t base, uint8_t inc) {
 	uint8_t val = IORD_32DIRECT(base, 0);
-	IOWR_32DIRECT(base, 0, val+1);
+	IOWR_32DIRECT(base, 0, val+inc);
 }
 
-void safe_increment(uint32_t base) {
-
+void safe_incrementBy(uint32_t base, uint8_t inc, alt_mutex_dev *mtx) {
+	altera_avalon_mutex_lock(mtx, 1);
+	incrementBy(base, inc);
+	altera_avalon_mutex_unlock(mtx);
 }
 
 void manip2_part1() {
@@ -75,17 +80,50 @@ void manip2_part1() {
 
 	while(1) {
 		uint32_t start = IORD_32DIRECT(SP_COUNTER_0_BASE, 0);
-		increment(PARALLELPORT_0_BASE);
-		increment(PARALLELPORT_COMMON_BASE);
+		incrementBy(PARALLELPORT_0_BASE, 1);
+		incrementBy(PARALLELPORT_COMMON_BASE, 1);
 		uint32_t end = IORD_32DIRECT(SP_COUNTER_0_BASE, 0);
-		printf("Access time for 2 parallel port increments: %d cycles\n", end-start);
+		printf("Access time for 2 parallel port increments: %ld cycles\n", end-start);
 		OSTimeDlyHMSM(0, 0, 0, 50);
+	}
+}
+
+void manip2_part2() {
+	setup();
+	alt_mutex_dev *mtx = altera_avalon_mutex_open("/dev/mutex_io");
+
+	while(1) {
+		uint32_t start = IORD_32DIRECT(SP_COUNTER_0_BASE, 0);
+		incrementBy(PARALLELPORT_0_BASE, 1);
+		safe_incrementBy(PARALLELPORT_COMMON_BASE, 1, mtx);
+		uint32_t end = IORD_32DIRECT(SP_COUNTER_0_BASE, 0);
+		printf("Access time for 2 parallel port increments: %ld cycles\n", end-start);
+		OSTimeDlyHMSM(0, 0, 0, 20);
+	}
+}
+
+/**
+ * MANIPULATION 3
+ */
+void manip3() {
+	altera_avalon_mailbox_dev *mbox = altera_avalon_mailbox_open("/dev/mailbox_common", NULL, NULL);
+	char *msg = SDRAM_CONTROLLER_COMMON_BASE;
+	alt_u32 toSend[2] = {0x0, 0x0};
+
+	while(1) {
+		printf("Type your message: ");
+		scanf("%s", msg);
+		size_t len = strlen(msg);
+
+		toSend[1] = (alt_u32) msg;
+		altera_avalon_mailbox_send(mbox, toSend, 0, POLL);
+		msg += len;
 	}
 }
 
 /* Prints "Hello World" and sleeps for three seconds */
 void task1(void* pdata) {
-	manip2_part1();
+	manip2_part2();
 }
 
 /* The main function creates two task and starts multi-tasking */

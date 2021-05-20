@@ -4,7 +4,7 @@
  * Machine generated for CPU 'cpu_1' in SOPC Builder design 'system'
  * SOPC Builder design path: /home/vm/Documents/cs476/lab3/hw/quartus/system.sopcinfo
  *
- * Generated: Mon May 17 12:38:36 CEST 2021
+ * Generated: Thu May 20 14:19:09 CEST 2021
  */
 
 /*
@@ -251,8 +251,8 @@
 #define INTERNAL_MEMORY_1_READ_DURING_WRITE_MODE "DONT_CARE"
 #define INTERNAL_MEMORY_1_SINGLE_CLOCK_OP 0
 #define INTERNAL_MEMORY_1_SIZE_MULTIPLE 1
-#define INTERNAL_MEMORY_1_SIZE_VALUE 153600
-#define INTERNAL_MEMORY_1_SPAN 153600
+#define INTERNAL_MEMORY_1_SIZE_VALUE 179200
+#define INTERNAL_MEMORY_1_SPAN 179200
 #define INTERNAL_MEMORY_1_TYPE "altera_avalon_onchip_memory2"
 #define INTERNAL_MEMORY_1_WRITABLE 1
 

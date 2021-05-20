@@ -4,7 +4,7 @@
  * Machine generated for CPU 'cpu_1' in SOPC Builder design 'system'
  * SOPC Builder design path: /home/vm/Documents/cs476/lab3/hw/quartus/system.sopcinfo
  *
- * Generated: Mon May 17 12:38:36 CEST 2021
+ * Generated: Thu May 20 14:19:09 CEST 2021
  */
 
 /*
@@ -66,7 +66,7 @@
  */
 
 #define INTERNAL_MEMORY_1_REGION_BASE 0x4040020
-#define INTERNAL_MEMORY_1_REGION_SPAN 153568
+#define INTERNAL_MEMORY_1_REGION_SPAN 179168
 #define RESET_REGION_BASE 0x4040000
 #define RESET_REGION_SPAN 32
 #define SDRAM_CONTROLLER_COMMON_REGION_BASE 0x0

@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>ucosii</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>May 17, 2021 12:38:25 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1621247905765</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>May 20, 2021 2:18:56 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1621513136768</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/vm/Documents/cs476/lab3/sw/nios/multiprocessor_cpu_0_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>/home/vm/Documents/cs476/lab3/hw/quartus/system.sopcinfo</SopcDesignFile>
@@ -1746,8 +1746,8 @@
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>internal_memory_0</slaveDescriptor>
-                <addressRange>0x04040000 - 0x040657FF</addressRange>
-                <addressSpan>153600</addressSpan>
+                <addressRange>0x04040000 - 0x0406BBFF</addressRange>
+                <addressSpan>179200</addressSpan>
                 <attributes>memory</attributes>
         </MemoryMap>
         <MemoryMap>
