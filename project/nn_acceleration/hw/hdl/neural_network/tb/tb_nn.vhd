@@ -54,7 +54,7 @@ architecture test of tb_nn is
 
 begin
 
-    -- instantiate the cam interface
+    -- instantiate the neural network
     dut: entity work.Network
     port map(
         weight0 => W0,
@@ -67,7 +67,7 @@ begin
         out_data => out_data
     );
 
-    -- test the cam interface
+    -- test the neural network
     simulation: process
 
             procedure checkValue(actual: in fixed_point; 
