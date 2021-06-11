@@ -21,6 +21,8 @@
 #include "system.h"
 #include "io.h"
 #include "i2c/i2c.h"
+#include "altera_avalon_pio_regs.h"
+#include "weights.h"
 
 #define FRAME_FRAME 640
 #define FRAME_LINE 20
@@ -43,8 +45,17 @@
 #define INPUT_WIDTH 	16
 #define INPUT_SIZE 		INPUT_WIDTH * INPUT_WIDTH * 4
 #define INPUT_START 	BUF_START + BUF_SIZE
+#define CUTOFF_VAL 		28
 
 #define WEIGHTS_START	INPUT_START + INPUT_SIZE
+
+#define LAYER2_REGNUM 	8
+#define LAYER0_REGNUM 	1
+#define IMGADDR_REGNUM 	12
+#define CONTROL_NN_REGNUM	0
+
+#define HIDDEN_SIZE 16
+#define OUTPUT_SIZE 5
 
 
 /************************************************
@@ -180,6 +191,32 @@ void print_to_file(char idx, uint32_t begin, uint32_t numRows, uint32_t numCols)
 	printf("Done!\n");
 }
 
+void print_to_file_transform(char idx, uint32_t begin, uint32_t numRows, uint32_t numCols) {
+	char* filename = "/mnt/host/image_transformx.ppm";
+	filename[15] = ('0' + idx);
+	FILE *fp = fopen(filename, "wb");
+
+	// Header
+	(void) fprintf(fp, "P6\n%d %d\n255\n", numCols, numRows);
+
+	// Body
+	for(uint32_t row = 0; row < numRows; row++) {
+		for(uint32_t col = 0; col < numCols; col++) {
+			uint32_t pixelVal = IORD_32DIRECT(begin, 4*(row*numCols+col));
+
+			uint8_t colors[3];
+			colors[0] = pixelVal ? 255 : 0;
+			colors[1] = pixelVal ? 255 : 0;
+			colors[2] = pixelVal ? 255 : 0;
+
+			(void) fwrite(colors, sizeof(uint8_t), 3, fp);
+		}
+	}
+
+	(void) fclose(fp);
+	printf("Done!\n");
+}
+
 /***************************************
  * Camera controller
  ***************************************/
@@ -213,9 +250,72 @@ void Delay_Ms(int time_ms) {
  ***************************************/
 
 void network_init(uint32_t img_addr, uint32_t w0_addr) {
-	IOWR_32DIRECT(NN_ACCELERATOR_0_BASE, 1*4, w0_addr);
-	IOWR_32DIRECT(NN_ACCELERATOR_0_BASE, 12*4, img_addr);
+	IOWR_32DIRECT(NN_ACCELERATOR_0_BASE, LAYER0_REGNUM*4, w0_addr);
+	IOWR_32DIRECT(NN_ACCELERATOR_0_BASE, IMGADDR_REGNUM*4, img_addr);
 }
+
+void set_weight(uint8_t regnum, uint16_t row, uint16_t col, uint16_t val) {
+	uint32_t idx = (row << 16) | col;
+	IOWR_32DIRECT(NN_ACCELERATOR_0_BASE, regnum*4, idx);
+	IOWR_32DIRECT(NN_ACCELERATOR_0_BASE, (regnum+1)*4, val);
+}
+
+void set_layer2_weights(uint16_t *ws, uint16_t numRows, uint16_t numCols) {
+	for(uint16_t r = 0; r < numRows; r++) {
+		for(uint16_t c = 0; c < numCols; c++)
+			set_weight(LAYER2_REGNUM, r, c, ws[r * numCols + c]);
+	}
+}
+
+void set_layer0_weights(uint16_t *ws, uint16_t numRows, uint16_t numCols) {
+	for(uint16_t c = 0; c < numCols; c++) {
+		for(uint16_t r = 0; r < numRows; r++) {
+			uint16_t val = ws[r * numCols + c];
+			IOWR_32DIRECT(WEIGHTS_START, (c*numRows+r)*4, val);
+		}
+	}
+}
+
+uint16_t nn_inference() {
+	// start
+	IOWR_32DIRECT(NN_ACCELERATOR_0_BASE, CONTROL_NN_REGNUM*4, 0x1);
+
+	// wait for finish
+	uint32_t ctrl = 1;
+	while(ctrl & 0x01)
+		ctrl = IORD_32DIRECT(NN_ACCELERATOR_0_BASE, CONTROL_NN_REGNUM*4);
+
+	// return inference value
+	return (ctrl >> 16);
+}
+
+/*****************************************
+ * Image pre-processing
+ *****************************************/
+
+void image_process() {
+	uint8_t pixelsPerBlock = HEIGHT / INPUT_WIDTH;
+	uint8_t offsetLeft = (WIDTH-HEIGHT) / 2;
+
+	for(uint8_t br = 0; br < INPUT_WIDTH; br++) {
+		for(uint8_t bc = 0; bc < INPUT_WIDTH; bc++) {
+			uint32_t blockval = 0;
+
+			for(uint8_t ir = 0; ir < pixelsPerBlock; ir++) {
+				for(uint8_t ic = 0; ic < pixelsPerBlock; ic++) {
+					uint16_t rowidx = br * pixelsPerBlock + ir;
+					uint16_t colidx = offsetLeft + bc * pixelsPerBlock + ic;
+					uint16_t pixval = get_pixel(BUF_START, HEIGHT-rowidx, WIDTH-colidx, WIDTH);
+					blockval += (pixval & 0x1f) + ((pixval >> 6) & 0x1f) + ((pixval >> 11) & 0x1f);
+				}
+			}
+
+			uint8_t final_val = (blockval <= CUTOFF_VAL * 3 * pixelsPerBlock * pixelsPerBlock);
+			IOWR_32DIRECT(INPUT_START, (br*INPUT_WIDTH+bc)*4, (final_val << 8));
+		}
+	}
+}
+
 
 /*****************************************
  * Main program
@@ -228,15 +328,30 @@ int main() {
 	Delay_Ms(2000);
 	init_camera_controller();
 
+	// initialize the neural net
+	network_init(INPUT_START, WEIGHTS_START);
+	set_layer0_weights(w0, HIDDEN_SIZE, INPUT_WIDTH * INPUT_WIDTH);
+	set_layer2_weights(w2, OUTPUT_SIZE, HIDDEN_SIZE);
+
+	IOWR_ALTERA_AVALON_PIO_DIRECTION(PIO_0_BASE, 0xffff);
+	IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, 0x0);
+
+
 	int capture = 1;
 	while(capture) {
-		printf("capturing\n");
+		//printf("capturing\n");
 		capture_image();
-		printf("printing\n");
-		print_to_file(0, BUF_START, HEIGHT, WIDTH);
+		image_process();
 
-		printf("Capture again? >");
-		scanf("%d", &capture);
+		//printf("printing\n");
+		//print_to_file_transform(0, INPUT_START, INPUT_WIDTH, INPUT_WIDTH);
+
+		//printf("network inference\n");
+		uint16_t onehot_val = nn_inference();
+		IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, onehot_val);
+
+		//printf("Capture again? >");
+		//scanf("%d", &capture);
 	}
 
 	return 0;
