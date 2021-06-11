@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="system" kind="system" version="1.0" fabric="QSYS">
  <!-- Format version 18.1 625 (Future versions may contain additional information.) -->
- <!-- 2021.06.10.17:07:32 -->
+ <!-- 2021.06.11.16:05:58 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
-  <value>1623337652</value>
+  <value>1623420357</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -6297,7 +6297,7 @@ parameters are a RESULT of the module parameters. -->
    <port>
     <name>AM_readdata</name>
     <direction>Input</direction>
-    <width>32</width>
+    <width>16</width>
     <role>readdata</role>
    </port>
    <port>

@@ -121,7 +121,7 @@ set_interface_property avalon_master SVD_ADDRESS_GROUP ""
 
 add_interface_port avalon_master AM_address address Output 32
 add_interface_port avalon_master AM_read read Output 1
-add_interface_port avalon_master AM_readdata readdata Input 32
+add_interface_port avalon_master AM_readdata readdata Input 16
 add_interface_port avalon_master AM_readdatavalid readdatavalid Input 1
 add_interface_port avalon_master AM_burstcount burstcount Output 6
 add_interface_port avalon_master AM_waitreq waitrequest Input 1

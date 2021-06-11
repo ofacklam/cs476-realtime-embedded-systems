@@ -16,7 +16,7 @@ entity nnDma is
         burstcount:     out std_logic_vector(5 downto 0);
 
         read:           out std_logic := '0';
-        readdata:       in std_logic_vector(31 downto 0);
+        readdata:       in std_logic_vector(15 downto 0);
         readdatavalid:  in std_logic;
 
         waitrequest:    in std_logic;
@@ -83,7 +83,7 @@ begin
         procedure handleValRead is
         begin
             if readdatavalid = '1' then
-                img_data <= signed(readdata(15 downto 0));
+                img_data <= signed(readdata);
                 state <= StartBurst;
             end if;
         end procedure;
@@ -107,12 +107,12 @@ begin
         procedure processBurstRead is
         begin
             if readdatavalid = '1' then
-                weight_data(to_integer(counter)) <= signed(readdata(15 downto 0));
+                weight_data(to_integer(counter)) <= signed(readdata);
                 counter <= counter + 1;
 
                 if counter+1 = BURST_SIZE then
-                    src <= std_logic_vector(unsigned(src) + 4);
-                    weight <= std_logic_vector(unsigned(weight) + 4 * BURST_SIZE);
+                    src <= std_logic_vector(unsigned(src) + 2);
+                    weight <= std_logic_vector(unsigned(weight) + 2 * BURST_SIZE);
                     burst_number <= burst_number + 1;
                     counter <= (others => '0');
                     accumulate <= '1';

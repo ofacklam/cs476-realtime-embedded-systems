@@ -16,7 +16,7 @@ entity NNAccelerator is
         AM_burstcount:      out std_logic_vector(5 downto 0);
 
         AM_read:            out std_logic := '0';
-        AM_readdata:        in std_logic_vector(31 downto 0);
+        AM_readdata:        in std_logic_vector(15 downto 0);
         AM_readdatavalid:   in std_logic;
 
         AM_waitreq:         in std_logic;
@@ -108,7 +108,7 @@ architecture comp of NNAccelerator is
             burstcount:     out std_logic_vector(5 downto 0);
 
             read:           out std_logic := '0';
-            readdata:       in std_logic_vector(31 downto 0);
+            readdata:       in std_logic_vector(15 downto 0);
             readdatavalid:  in std_logic;
 
             waitrequest:    in std_logic;
