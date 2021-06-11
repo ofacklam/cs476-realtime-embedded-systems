@@ -72,7 +72,7 @@ entity DE1_SoC_TRDB_D5M_top_level is
         KEY_N              : in    std_logic_vector(3 downto 0);
 
         -- LED
-        -- LEDR               : out   std_logic_vector(9 downto 0);
+        LEDR               : out   std_logic_vector(9 downto 0);
 
         -- PS2
         -- PS2_CLK            : inout std_logic;
@@ -180,6 +180,8 @@ architecture rtl of DE1_SoC_TRDB_D5M_top_level is
 			camera_controller_0_camera_conduit_lval   : in    std_logic                     := 'X';             -- lval
 			camera_controller_0_camera_conduit_pixclk : in    std_logic                     := 'X';             -- pixclk
 			clk_clk                                   : in    std_logic                     := 'X';             -- clk
+			i2c_0_i2c_scl                             : inout std_logic                     := 'X';             -- scl
+			i2c_0_i2c_sda                             : inout std_logic                     := 'X';             -- sda
 			pll_0_sdram_clk                           : out   std_logic;                                        -- clk
 			reset_reset_n                             : in    std_logic                     := 'X';             -- reset_n
 			sdram_controller_0_wire_addr              : out   std_logic_vector(12 downto 0);                    -- addr
@@ -191,8 +193,7 @@ architecture rtl of DE1_SoC_TRDB_D5M_top_level is
 			sdram_controller_0_wire_dqm               : out   std_logic_vector(1 downto 0);                     -- dqm
 			sdram_controller_0_wire_ras_n             : out   std_logic;                                        -- ras_n
 			sdram_controller_0_wire_we_n              : out   std_logic;                                        -- we_n
-			i2c_0_i2c_scl                             : inout std_logic                     := 'X';             -- scl
-			i2c_0_i2c_sda                             : inout std_logic                     := 'X'              -- sda
+			pio_0_external_connection_export          : out   std_logic_vector(9 downto 0)                      -- export
 		);
 	end component system;
 
@@ -221,7 +222,8 @@ begin
 			sdram_controller_0_wire_ras_n             => DRAM_RAS_N,        --                                   .ras_n
 			sdram_controller_0_wire_we_n              => DRAM_WE_N,         --                                   .we_n
 			i2c_0_i2c_scl                             => GPIO_0_D5M_SCLK,   --                          i2c_0_i2c.scl
-			i2c_0_i2c_sda                             => GPIO_0_D5M_SDATA   --                                   .sda
+			i2c_0_i2c_sda                             => GPIO_0_D5M_SDATA,  --                                   .sda
+			pio_0_external_connection_export          => LEDR               --          pio_0_external_connection.export
 		);
 
 end;

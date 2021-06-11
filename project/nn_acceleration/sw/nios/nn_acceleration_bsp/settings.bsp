@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Jun 9, 2021 9:50:20 AM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1623225020419</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Jun 10, 2021 5:34:31 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1623339271303</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/vm/Documents/cs476/project/nn_acceleration/sw/nios/nn_acceleration_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>/home/vm/Documents/cs476/project/nn_acceleration/hw/quartus/system.sopcinfo</SopcDesignFile>
@@ -917,52 +917,64 @@
                 <attributes>memory</attributes>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>onchip_memory2_0</slaveDescriptor>
-                <addressRange>0x04020000 - 0x0403FFFF</addressRange>
-                <addressSpan>131072</addressSpan>
-                <attributes>memory</attributes>
+                <slaveDescriptor>performance_counter_0</slaveDescriptor>
+                <addressRange>0x04001000 - 0x0400103F</addressRange>
+                <addressSpan>64</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>nn_accelerator_0</slaveDescriptor>
+                <addressRange>0x04001040 - 0x0400107F</addressRange>
+                <addressSpan>64</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>pio_0</slaveDescriptor>
+                <addressRange>0x04001080 - 0x0400108F</addressRange>
+                <addressSpan>16</addressSpan>
+                <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>camera_controller_0</slaveDescriptor>
-                <addressRange>0x04041000 - 0x0404100F</addressRange>
+                <addressRange>0x04001090 - 0x0400109F</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>jtag_uart_0</slaveDescriptor>
-                <addressRange>0x04041010 - 0x04041017</addressRange>
+                <addressRange>0x040010A0 - 0x040010A7</addressRange>
                 <addressSpan>8</addressSpan>
                 <attributes>printable</attributes>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>i2c_0</slaveDescriptor>
-                <addressRange>0x04041018 - 0x0404101B</addressRange>
+                <addressRange>0x040010A8 - 0x040010AB</addressRange>
                 <addressSpan>4</addressSpan>
                 <attributes/>
         </MemoryMap>
         <LinkerSection>
                 <sectionName>.text</sectionName>
-                <regionName>onchip_memory2_0</regionName>
+                <regionName>sdram_controller_0</regionName>
         </LinkerSection>
         <LinkerSection>
                 <sectionName>.rodata</sectionName>
-                <regionName>onchip_memory2_0</regionName>
+                <regionName>sdram_controller_0</regionName>
         </LinkerSection>
         <LinkerSection>
                 <sectionName>.rwdata</sectionName>
-                <regionName>onchip_memory2_0</regionName>
+                <regionName>sdram_controller_0</regionName>
         </LinkerSection>
         <LinkerSection>
                 <sectionName>.bss</sectionName>
-                <regionName>onchip_memory2_0</regionName>
+                <regionName>sdram_controller_0</regionName>
         </LinkerSection>
         <LinkerSection>
                 <sectionName>.heap</sectionName>
-                <regionName>onchip_memory2_0</regionName>
+                <regionName>sdram_controller_0</regionName>
         </LinkerSection>
         <LinkerSection>
                 <sectionName>.stack</sectionName>
-                <regionName>onchip_memory2_0</regionName>
+                <regionName>sdram_controller_0</regionName>
         </LinkerSection>
         <SoftwarePackageInfo>
                 <name>altera_hostfs</name>

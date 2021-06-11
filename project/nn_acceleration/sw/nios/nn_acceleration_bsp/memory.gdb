@@ -3,7 +3,7 @@
 # Machine generated for CPU 'nios2_gen2_0' in SOPC Builder design 'system'
 # SOPC Builder design path: /home/vm/Documents/cs476/project/nn_acceleration/hw/quartus/system.sopcinfo
 #
-# Generated: Tue Jun 08 16:52:37 CEST 2021
+# Generated: Thu Jun 10 17:34:20 CEST 2021
 
 # DO NOT MODIFY THIS FILE
 #
@@ -48,6 +48,3 @@
 
 # sdram_controller_0
 memory 0x0 0x4000000 cache
-
-# onchip_memory2_0
-memory 0x4020000 0x4040000 cache

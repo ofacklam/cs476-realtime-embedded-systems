@@ -36,9 +36,15 @@
 #define WIDTH 		320
 #define HEIGHT 		240
 
-#define BUF_START 	0x10
+#define BUF_START 	0x00
 #define BUF_SIZE 	WIDTH * HEIGHT * 2
-#define NUM_BUF 	2
+#define NUM_BUF 	1
+
+#define INPUT_WIDTH 	16
+#define INPUT_SIZE 		INPUT_WIDTH * INPUT_WIDTH * 4
+#define INPUT_START 	BUF_START + BUF_SIZE
+
+#define WEIGHTS_START	INPUT_START + INPUT_SIZE
 
 
 /************************************************
@@ -200,6 +206,15 @@ void capture_image() {
 void Delay_Ms(int time_ms) {
     usleep(time_ms * 1000);
     return;
+}
+
+/***************************************
+ * Neural network controller
+ ***************************************/
+
+void network_init(uint32_t img_addr, uint32_t w0_addr) {
+	IOWR_32DIRECT(NN_ACCELERATOR_0_BASE, 1*4, w0_addr);
+	IOWR_32DIRECT(NN_ACCELERATOR_0_BASE, 12*4, img_addr);
 }
 
 /*****************************************

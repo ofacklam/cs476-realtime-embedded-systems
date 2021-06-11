@@ -3,11 +3,12 @@
  <debug showDebugMenu="0" />
  <systemtable filter="All Interfaces">
   <columns>
-   <connections preferredWidth="207" />
+   <connections preferredWidth="223" />
    <irq preferredWidth="34" />
    <inputclock preferredWidth="121" />
   </columns>
  </systemtable>
- <library expandedCategories="Project,Library" />
+ <library
+   expandedCategories="Library/Basic Functions/Simulation; Debug and Verification,Library/Basic Functions,Project,Library/Basic Functions/Simulation; Debug and Verification/Debug and Performance,Library" />
  <window width="1853" height="1055" x="67" y="25" />
 </preferences>

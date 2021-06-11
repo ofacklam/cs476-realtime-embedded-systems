@@ -1,3 +1,5 @@
+-- altera vhdl_input_version vhdl_2008
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -19,8 +21,8 @@ begin
 
     -- compute the argmax
     process(in_data)
-        variable max_val: fixed_point := X"00000000";
-        variable max_idx: natural := 0
+        variable max_val: fixed_point := X"0000";
+        variable max_idx: natural := 0;
     begin
         
         for i in 0 to size-1 loop

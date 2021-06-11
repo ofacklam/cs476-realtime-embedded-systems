@@ -1,26 +1,30 @@
 # # File gsaved with Nlview version 6.3.8  2013-12-19 bk=1.2992 VDI=34 GEI=35
 # 
+preplace inst system.pio_0 -pg 1 -lvl 4 -y 300
 preplace inst system.nios2_gen2_0.cpu -pg 1
-preplace inst system.sdram_controller_0 -pg 1 -lvl 3 -y 230
+preplace inst system.sdram_controller_0 -pg 1 -lvl 3 -y 200
 preplace inst system.nios2_gen2_0.clock_bridge -pg 1
-preplace inst system.jtag_uart_0 -pg 1 -lvl 3 -y 130
-preplace inst system.pll_0 -pg 1 -lvl 3 -y 350
+preplace inst system.jtag_uart_0 -pg 1 -lvl 3 -y 80
+preplace inst system.pll_0 -pg 1 -lvl 3 -y 400
 preplace inst system.nios2_gen2_0.reset_bridge -pg 1
-preplace inst system.onchip_memory2_0 -pg 1 -lvl 3 -y 30
-preplace inst system.nios2_gen2_0 -pg 1 -lvl 2 -y 90
-preplace inst system.camera_controller_0 -pg 1 -lvl 1 -y 60
+preplace inst system.nios2_gen2_0 -pg 1 -lvl 2 -y 60
+preplace inst system.camera_controller_0 -pg 1 -lvl 1 -y 30
+preplace inst system.nn_accelerator_0 -pg 1 -lvl 4 -y 60
+preplace inst system.i2c_0 -pg 1 -lvl 4 -y 180
 preplace inst system -pg 1 -lvl 1 -y 40 -regy -20
-preplace inst system.clk_0 -pg 1 -lvl 2 -y 350
-preplace netloc EXPORT<net_container>system</net_container>(SLAVE)system.clk,(SLAVE)clk_0.clk_in) 1 0 2 NJ 360 NJ
-preplace netloc FAN_OUT<net_container>system</net_container>(SLAVE)jtag_uart_0.clk,(SLAVE)camera_controller_0.clock,(SLAVE)nios2_gen2_0.clk,(MASTER)pll_0.outclk0,(SLAVE)onchip_memory2_0.clk1) 1 0 4 230 170 510 230 910 120 1170
-preplace netloc EXPORT<net_container>system</net_container>(MASTER)system.pll_0_sdram,(MASTER)pll_0.outclk2) 1 3 1 N
+preplace inst system.clk_0 -pg 1 -lvl 2 -y 320
+preplace netloc EXPORT<net_container>system</net_container>(SLAVE)system.clk,(SLAVE)clk_0.clk_in) 1 0 2 NJ 330 NJ
+preplace netloc INTERCONNECT<net_container>system</net_container>(SLAVE)jtag_uart_0.avalon_jtag_slave,(MASTER)nios2_gen2_0.instruction_master,(SLAVE)sdram_controller_0.s1,(SLAVE)nios2_gen2_0.debug_mem_slave,(SLAVE)camera_controller_0.avalon_slave,(MASTER)camera_controller_0.avalon_master,(MASTER)nios2_gen2_0.data_master,(SLAVE)nn_accelerator_0.avalon_slave,(MASTER)nn_accelerator_0.avalon_master,(SLAVE)i2c_0.avalon_slave,(SLAVE)pio_0.s1) 1 0 5 230 160 510 200 910 30 1310 50 1500
+preplace netloc EXPORT<net_container>system</net_container>(MASTER)system.pll_0_sdram,(MASTER)pll_0.outclk2) 1 3 2 NJ 450 NJ
 preplace netloc EXPORT<net_container>system</net_container>(SLAVE)system.camera_controller_0_camera_conduit,(SLAVE)camera_controller_0.camera_conduit) 1 0 1 NJ
-preplace netloc POINT_TO_POINT<net_container>system</net_container>(SLAVE)pll_0.refclk,(MASTER)clk_0.clk) 1 2 1 N
-preplace netloc POINT_TO_POINT<net_container>system</net_container>(MASTER)pll_0.outclk1,(SLAVE)sdram_controller_0.clk) 1 2 2 950 340 1150
-preplace netloc POINT_TO_POINT<net_container>system</net_container>(SLAVE)jtag_uart_0.irq,(MASTER)nios2_gen2_0.irq) 1 2 1 N
-preplace netloc INTERCONNECT<net_container>system</net_container>(SLAVE)onchip_memory2_0.s1,(MASTER)camera_controller_0.avalon_master,(SLAVE)nios2_gen2_0.debug_mem_slave,(MASTER)nios2_gen2_0.data_master,(SLAVE)camera_controller_0.avalon_slave,(SLAVE)sdram_controller_0.s1,(SLAVE)jtag_uart_0.avalon_jtag_slave,(MASTER)nios2_gen2_0.instruction_master) 1 0 3 230 50 490 50 890
-preplace netloc EXPORT<net_container>system</net_container>(SLAVE)sdram_controller_0.wire,(SLAVE)system.sdram_controller_0_wire) 1 0 3 NJ 300 NJ 300 NJ
-preplace netloc EXPORT<net_container>system</net_container>(SLAVE)clk_0.clk_in_reset,(SLAVE)system.reset) 1 0 2 NJ 380 NJ
-preplace netloc INTERCONNECT<net_container>system</net_container>(SLAVE)jtag_uart_0.reset,(SLAVE)camera_controller_0.reset_sink,(SLAVE)sdram_controller_0.reset,(SLAVE)pll_0.reset,(SLAVE)onchip_memory2_0.reset1,(SLAVE)nios2_gen2_0.reset,(MASTER)clk_0.clk_reset,(MASTER)nios2_gen2_0.debug_reset_request) 1 0 3 250 190 530 250 930
-levelinfo -pg 1 0 200 1290
-levelinfo -hier system 210 280 650 1010 1190
+preplace netloc EXPORT<net_container>system</net_container>(SLAVE)system.sdram_controller_0_wire,(SLAVE)sdram_controller_0.wire) 1 0 3 NJ 280 NJ 280 NJ
+preplace netloc POINT_TO_POINT<net_container>system</net_container>(SLAVE)pll_0.refclk,(MASTER)clk_0.clk) 1 2 1 910
+preplace netloc EXPORT<net_container>system</net_container>(SLAVE)system.i2c_0_i2c,(SLAVE)i2c_0.i2c) 1 0 4 NJ 310 NJ 310 NJ 310 NJ
+preplace netloc INTERCONNECT<net_container>system</net_container>(SLAVE)sdram_controller_0.reset,(SLAVE)nn_accelerator_0.reset_sink,(MASTER)nios2_gen2_0.debug_reset_request,(SLAVE)jtag_uart_0.reset,(SLAVE)pio_0.reset,(SLAVE)camera_controller_0.reset_sink,(SLAVE)pll_0.reset,(SLAVE)i2c_0.reset,(MASTER)clk_0.clk_reset,(SLAVE)nios2_gen2_0.reset) 1 0 4 250 180 550 240 950 330 1250
+preplace netloc FAN_OUT<net_container>system</net_container>(SLAVE)jtag_uart_0.irq,(MASTER)nios2_gen2_0.irq,(SLAVE)i2c_0.interrupt_sender) 1 2 2 930 50 1230
+preplace netloc FAN_OUT<net_container>system</net_container>(SLAVE)camera_controller_0.clock,(SLAVE)nn_accelerator_0.clock,(SLAVE)nios2_gen2_0.clk,(SLAVE)i2c_0.clock,(SLAVE)jtag_uart_0.clk,(SLAVE)pio_0.clk,(MASTER)pll_0.outclk0) 1 0 4 270 140 530 220 970 70 1270
+preplace netloc EXPORT<net_container>system</net_container>(SLAVE)clk_0.clk_in_reset,(SLAVE)system.reset) 1 0 2 NJ 350 NJ
+preplace netloc EXPORT<net_container>system</net_container>(SLAVE)system.pio_0_external_connection,(SLAVE)pio_0.external_connection) 1 0 4 NJ 260 NJ 260 NJ 190 NJ
+preplace netloc POINT_TO_POINT<net_container>system</net_container>(SLAVE)sdram_controller_0.clk,(MASTER)pll_0.outclk1) 1 2 2 1030 390 1230
+levelinfo -pg 1 0 200 1620
+levelinfo -hier system 210 300 670 1090 1340 1520

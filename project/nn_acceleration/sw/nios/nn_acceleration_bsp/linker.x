@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_gen2_0' in SOPC Builder design 'system'
  * SOPC Builder design path: /home/vm/Documents/cs476/project/nn_acceleration/hw/quartus/system.sopcinfo
  *
- * Generated: Wed Jun 09 00:34:28 CEST 2021
+ * Generated: Thu Jun 10 17:34:20 CEST 2021
  */
 
 /*
@@ -50,14 +50,13 @@
 
 MEMORY
 {
-    sdram_controller_0 : ORIGIN = 0x0, LENGTH = 67108864
-    reset : ORIGIN = 0x4020000, LENGTH = 32
-    onchip_memory2_0 : ORIGIN = 0x4020020, LENGTH = 131040
+    sdram_controller_0_BEFORE_RESET : ORIGIN = 0x0, LENGTH = 262144
+    reset : ORIGIN = 0x40000, LENGTH = 32
+    sdram_controller_0 : ORIGIN = 0x40020, LENGTH = 66846688
 }
 
 /* Define symbols for each memory base-address */
 __alt_mem_sdram_controller_0 = 0x0;
-__alt_mem_onchip_memory2_0 = 0x4020000;
 
 OUTPUT_FORMAT( "elf32-littlenios2",
                "elf32-littlenios2",
@@ -113,7 +112,7 @@ SECTIONS
         KEEP (*(.exceptions.exit));
         KEEP (*(.exceptions));
         PROVIDE (__ram_exceptions_end = ABSOLUTE(.));
-    } > onchip_memory2_0
+    } > sdram_controller_0
 
     PROVIDE (__flash_exceptions_start = LOADADDR(.exceptions));
 
@@ -209,7 +208,7 @@ SECTIONS
         PROVIDE (__DTOR_END__ = ABSOLUTE(.));
         KEEP (*(.jcr))
         . = ALIGN(4);
-    } > onchip_memory2_0 = 0x3a880100 /* NOP instruction (always in big-endian byte ordering) */
+    } > sdram_controller_0 = 0x3a880100 /* NOP instruction (always in big-endian byte ordering) */
 
     /*
      *
@@ -226,7 +225,7 @@ SECTIONS
         *(.rodata1)
         . = ALIGN(4);
         PROVIDE (__ram_rodata_end = ABSOLUTE(.));
-    } > onchip_memory2_0
+    } > sdram_controller_0
 
     PROVIDE (__flash_rodata_start = LOADADDR(.rodata));
 
@@ -260,7 +259,7 @@ SECTIONS
         _edata = ABSOLUTE(.);
         PROVIDE (edata = ABSOLUTE(.));
         PROVIDE (__ram_rwdata_end = ABSOLUTE(.));
-    } > onchip_memory2_0
+    } > sdram_controller_0
 
     PROVIDE (__flash_rwdata_start = LOADADDR(.rwdata));
 
@@ -291,7 +290,7 @@ SECTIONS
 
         . = ALIGN(4);
         __bss_end = ABSOLUTE(.);
-    } > onchip_memory2_0
+    } > sdram_controller_0
 
     /*
      *
@@ -316,35 +315,18 @@ SECTIONS
      *
      */
 
-    .sdram_controller_0 : AT ( LOADADDR (.bss) + SIZEOF (.bss) )
+    .sdram_controller_0 LOADADDR (.bss) + SIZEOF (.bss) : AT ( LOADADDR (.bss) + SIZEOF (.bss) )
     {
         PROVIDE (_alt_partition_sdram_controller_0_start = ABSOLUTE(.));
         *(.sdram_controller_0 .sdram_controller_0. sdram_controller_0.*)
         . = ALIGN(4);
         PROVIDE (_alt_partition_sdram_controller_0_end = ABSOLUTE(.));
-    } > sdram_controller_0
-
-    PROVIDE (_alt_partition_sdram_controller_0_load_addr = LOADADDR(.sdram_controller_0));
-
-    /*
-     *
-     * This section's LMA is set to the .text region.
-     * crt0 will copy to this section's specified mapped region virtual memory address (VMA)
-     *
-     */
-
-    .onchip_memory2_0 LOADADDR (.sdram_controller_0) + SIZEOF (.sdram_controller_0) : AT ( LOADADDR (.sdram_controller_0) + SIZEOF (.sdram_controller_0) )
-    {
-        PROVIDE (_alt_partition_onchip_memory2_0_start = ABSOLUTE(.));
-        *(.onchip_memory2_0 .onchip_memory2_0. onchip_memory2_0.*)
-        . = ALIGN(4);
-        PROVIDE (_alt_partition_onchip_memory2_0_end = ABSOLUTE(.));
         _end = ABSOLUTE(.);
         end = ABSOLUTE(.);
         __alt_stack_base = ABSOLUTE(.);
-    } > onchip_memory2_0
+    } > sdram_controller_0
 
-    PROVIDE (_alt_partition_onchip_memory2_0_load_addr = LOADADDR(.onchip_memory2_0));
+    PROVIDE (_alt_partition_sdram_controller_0_load_addr = LOADADDR(.sdram_controller_0));
 
     /*
      * Stabs debugging sections.
@@ -393,7 +375,7 @@ SECTIONS
 /*
  * Don't override this, override the __alt_stack_* symbols instead.
  */
-__alt_data_end = 0x4040000;
+__alt_data_end = 0x4000000;
 
 /*
  * The next two symbols define the location of the default stack.  You can
@@ -409,4 +391,4 @@ PROVIDE( __alt_stack_limit   = __alt_stack_base );
  * Override this symbol to put the heap in a different memory.
  */
 PROVIDE( __alt_heap_start    = end );
-PROVIDE( __alt_heap_limit    = 0x4040000 );
+PROVIDE( __alt_heap_limit    = 0x4000000 );
