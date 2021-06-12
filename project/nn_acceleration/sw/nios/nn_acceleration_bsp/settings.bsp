@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Jun 10, 2021 5:34:31 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1623339271303</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Jun 11, 2021 4:38:56 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1623422336070</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/vm/Documents/cs476/project/nn_acceleration/sw/nios/nn_acceleration_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>/home/vm/Documents/cs476/project/nn_acceleration/hw/quartus/system.sopcinfo</SopcDesignFile>

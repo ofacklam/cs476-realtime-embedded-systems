@@ -22,6 +22,7 @@
 #include "io.h"
 #include "i2c/i2c.h"
 #include "altera_avalon_pio_regs.h"
+#include "altera_avalon_performance_counter.h"
 #include "weights.h"
 
 #define FRAME_FRAME 640
@@ -271,7 +272,7 @@ void set_layer0_weights(uint16_t *ws, uint16_t numRows, uint16_t numCols) {
 	for(uint16_t c = 0; c < numCols; c++) {
 		for(uint16_t r = 0; r < numRows; r++) {
 			uint16_t val = ws[r * numCols + c];
-			IOWR_32DIRECT(WEIGHTS_START, (c*numRows+r)*4, val);
+			IOWR_16DIRECT(WEIGHTS_START, (c*numRows+r)*2, val);
 		}
 	}
 }
@@ -311,7 +312,7 @@ void image_process() {
 			}
 
 			uint8_t final_val = (blockval <= CUTOFF_VAL * 3 * pixelsPerBlock * pixelsPerBlock);
-			IOWR_32DIRECT(INPUT_START, (br*INPUT_WIDTH+bc)*4, (final_val << 8));
+			IOWR_16DIRECT(INPUT_START, (br*INPUT_WIDTH+bc)*2, (final_val << 8));
 		}
 	}
 }
@@ -336,23 +337,38 @@ int main() {
 	IOWR_ALTERA_AVALON_PIO_DIRECTION(PIO_0_BASE, 0xffff);
 	IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, 0x0);
 
+	//PERF_START_MEASURING(PERFORMANCE_COUNTER_0_BASE);
 
-	int capture = 1;
+
+	int capture = 100;
 	while(capture) {
 		//printf("capturing\n");
+		//PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE, 1);
 		capture_image();
+		//PERF_END(PERFORMANCE_COUNTER_0_BASE, 1);
+
+		//printf("transforming\n");
+		//PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE, 2);
 		image_process();
+		//PERF_END(PERFORMANCE_COUNTER_0_BASE, 2);
 
 		//printf("printing\n");
 		//print_to_file_transform(0, INPUT_START, INPUT_WIDTH, INPUT_WIDTH);
 
 		//printf("network inference\n");
+		//PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE, 3);
 		uint16_t onehot_val = nn_inference();
+		//PERF_END(PERFORMANCE_COUNTER_0_BASE, 3);
+
+		//printf("diplaying result\n");
 		IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, onehot_val);
 
 		//printf("Capture again? >");
 		//scanf("%d", &capture);
 	}
+
+	//PERF_STOP_MEASURING(PERFORMANCE_COUNTER_0_BASE);
+	perf_print_formatted_report(PERFORMANCE_COUNTER_0_BASE, alt_get_cpu_freq(), 3, "Image capture", "Image TF", "Inference");
 
 	return 0;
 }
