@@ -419,7 +419,7 @@ void profile(uint8_t software) {
 int main() {
 	setup();
 
-	profile(0);
+	continuous_run(0);
 
 	return 0;
 }
