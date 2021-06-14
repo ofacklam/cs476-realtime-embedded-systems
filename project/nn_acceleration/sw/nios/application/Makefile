@@ -144,7 +144,7 @@ ELF := nn_acceleration.elf
 # Paths to C, C++, and assembly source files.
 C_SRCS += hello_world.c
 C_SRCS += i2c/i2c.c
-CXX_SRCS :=
+CXX_SRCS := nn_source.cpp
 ASM_SRCS :=
 
 

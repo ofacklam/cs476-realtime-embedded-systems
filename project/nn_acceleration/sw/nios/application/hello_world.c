@@ -24,6 +24,7 @@
 #include "altera_avalon_pio_regs.h"
 #include "altera_avalon_performance_counter.h"
 #include "weights.h"
+#include "nn_header.h"
 
 #define FRAME_FRAME 640
 #define FRAME_LINE 20
@@ -57,6 +58,9 @@
 
 #define HIDDEN_SIZE 16
 #define OUTPUT_SIZE 5
+
+Network* software_network;
+double software_input[INPUT_WIDTH * INPUT_WIDTH];
 
 
 /************************************************
@@ -290,11 +294,27 @@ uint16_t nn_inference() {
 	return (ctrl >> 16);
 }
 
+uint16_t nn_software() {
+	uint16_t input_size = INPUT_WIDTH * INPUT_WIDTH;
+	double* output = run_network(software_network, software_input);
+
+	uint8_t max_idx = 0;
+	double max_val = 0.0;
+	for(uint8_t i = 0; i < OUTPUT_SIZE; i++) {
+		if(output[i] >= max_val) {
+			max_idx = i;
+			max_val = output[i];
+		}
+	}
+
+	return 1u << max_idx;
+}
+
 /*****************************************
  * Image pre-processing
  *****************************************/
 
-void image_process() {
+void image_process(uint8_t software) {
 	uint8_t pixelsPerBlock = HEIGHT / INPUT_WIDTH;
 	uint8_t offsetLeft = (WIDTH-HEIGHT) / 2;
 
@@ -312,7 +332,10 @@ void image_process() {
 			}
 
 			uint8_t final_val = (blockval <= CUTOFF_VAL * 3 * pixelsPerBlock * pixelsPerBlock);
-			IOWR_16DIRECT(INPUT_START, (br*INPUT_WIDTH+bc)*2, (final_val << 8));
+			if(software)
+				software_input[br*INPUT_WIDTH+bc] = final_val;
+			else
+				IOWR_16DIRECT(INPUT_START, (br*INPUT_WIDTH+bc)*2, (final_val << 8));
 		}
 	}
 }
@@ -322,8 +345,7 @@ void image_process() {
  * Main program
  *****************************************/
 
-int main() {
-
+void setup() {
 	// initialize the camera
 	init_camera_hardware(false, false);
 	Delay_Ms(2000);
@@ -334,41 +356,70 @@ int main() {
 	set_layer0_weights(w0, HIDDEN_SIZE, INPUT_WIDTH * INPUT_WIDTH);
 	set_layer2_weights(w2, OUTPUT_SIZE, HIDDEN_SIZE);
 
+	// initialize software neural net
+	software_network = create_network_from_json(JSON_NETWORK_ACTIVATION_BY_LAYERS);
+
+	// initialize PIO
 	IOWR_ALTERA_AVALON_PIO_DIRECTION(PIO_0_BASE, 0xffff);
 	IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, 0x0);
+}
 
-	//PERF_START_MEASURING(PERFORMANCE_COUNTER_0_BASE);
-
-
-	int capture = 100;
-	while(capture) {
+void continuous_run(uint8_t software) {
+	while(1) {
 		//printf("capturing\n");
-		//PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE, 1);
 		capture_image();
-		//PERF_END(PERFORMANCE_COUNTER_0_BASE, 1);
 
 		//printf("transforming\n");
-		//PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE, 2);
-		image_process();
-		//PERF_END(PERFORMANCE_COUNTER_0_BASE, 2);
-
-		//printf("printing\n");
-		//print_to_file_transform(0, INPUT_START, INPUT_WIDTH, INPUT_WIDTH);
+		image_process(software);
 
 		//printf("network inference\n");
-		//PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE, 3);
-		uint16_t onehot_val = nn_inference();
-		//PERF_END(PERFORMANCE_COUNTER_0_BASE, 3);
+		uint16_t onehot_val;
+		if(software)
+			onehot_val = nn_software();
+		else
+			onehot_val = nn_inference();
 
 		//printf("diplaying result\n");
 		IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, onehot_val);
+	}
+}
 
-		//printf("Capture again? >");
-		//scanf("%d", &capture);
+void profile(uint8_t software) {
+	PERF_START_MEASURING(PERFORMANCE_COUNTER_0_BASE);
+
+	int capture = 100;
+	while(capture--) {
+		//printf("capturing\n");
+		PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE, 1);
+		capture_image();
+		PERF_END(PERFORMANCE_COUNTER_0_BASE, 1);
+
+		//printf("transforming\n");
+		PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE, 2);
+		image_process(software);
+		PERF_END(PERFORMANCE_COUNTER_0_BASE, 2);
+
+		//printf("network inference\n");
+		PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE, 3);
+		uint16_t onehot_val;
+		if(software)
+			onehot_val = nn_software();
+		else
+			onehot_val = nn_inference();
+		PERF_END(PERFORMANCE_COUNTER_0_BASE, 3);
+
+		//printf("diplaying result\n");
+		IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, onehot_val);
 	}
 
-	//PERF_STOP_MEASURING(PERFORMANCE_COUNTER_0_BASE);
+	PERF_STOP_MEASURING(PERFORMANCE_COUNTER_0_BASE);
 	perf_print_formatted_report(PERFORMANCE_COUNTER_0_BASE, alt_get_cpu_freq(), 3, "Image capture", "Image TF", "Inference");
+}
+
+int main() {
+	setup();
+
+	profile(0);
 
 	return 0;
 }
